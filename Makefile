@@ -34,9 +34,8 @@ GAME_MANAGERS_DIR = game/src/managers
 GAME_SCORING_DIR = game/src/scoring
 GAME_EVENTS_DIR = game/src/events
 
-# Find all C source files in engine and game directories
-SRC = $(wildcard $(ENGINE_GRAPHICS_DIR)/*.c) $(wildcard $(ENGINE_MATH_DIR)/*.c) $(wildcard $(ENGINE_INPUT_DIR)/*.c) $(wildcard $(ENGINE_AUDIO_DIR)/*.c) $(wildcard $(ENGINE_TIME_DIR)/*.c) $(wildcard $(ENGINE_UTILS_DIR)/*.c) $(wildcard $(ENGINE_MEMORY_DIR)/*.c) $(wildcard $(ENGINE_EVENTS_DIR)/*.c) \
-      $(wildcard $(GAME_MAIN_DIR)/*.c) $(wildcard $(GAME_STAGES_DIR)/*.c) $(wildcard $(GAME_ENTITIES_DIR)/*.c) $(wildcard $(GAME_CONTROLLERS_DIR)/*.c) $(wildcard $(GAME_COLLISION_DIR)/*.c) $(wildcard $(GAME_RENDERING_DIR)/*.c) $(wildcard $(GAME_MANAGERS_DIR)/*.c) $(wildcard $(GAME_SCORING_DIR)/*.c) $(wildcard $(GAME_EVENTS_DIR)/*.c)
+# Find all C source files in game directories only (engine is now a library)
+SRC = $(wildcard $(GAME_MAIN_DIR)/*.c) $(wildcard $(GAME_STAGES_DIR)/*.c) $(wildcard $(GAME_ENTITIES_DIR)/*.c) $(wildcard $(GAME_CONTROLLERS_DIR)/*.c) $(wildcard $(GAME_COLLISION_DIR)/*.c) $(wildcard $(GAME_RENDERING_DIR)/*.c) $(wildcard $(GAME_MANAGERS_DIR)/*.c) $(wildcard $(GAME_SCORING_DIR)/*.c) $(wildcard $(GAME_EVENTS_DIR)/*.c)
 
 HEADERS = $(wildcard $(SRCDIR)/*.h) \
           $(wildcard $(ENGINE_GRAPHICS_DIR)/*.h) $(wildcard $(ENGINE_MATH_DIR)/*.h) $(wildcard $(ENGINE_INPUT_DIR)/*.h) $(wildcard $(ENGINE_AUDIO_DIR)/*.h) $(wildcard $(ENGINE_TIME_DIR)/*.h) $(wildcard $(ENGINE_UTILS_DIR)/*.h) $(wildcard $(ENGINE_MEMORY_DIR)/*.h) $(wildcard $(ENGINE_EVENTS_DIR)/*.h) \
@@ -50,6 +49,7 @@ INCLUDES = -I. \
            -I$(GAME_MAIN_DIR) -I$(GAME_STAGES_DIR) -I$(GAME_ENTITIES_DIR) -I$(GAME_CONTROLLERS_DIR) -I$(GAME_COLLISION_DIR) -I$(GAME_RENDERING_DIR) -I$(GAME_MANAGERS_DIR) -I$(GAME_SCORING_DIR) -I$(GAME_EVENTS_DIR)
 
 CFLAGS := -ggdb3 -Ofast --std=c99 -Wall -Wextra -pedantic-errors $(INCLUDES) $(SDL2_CFLAGS)
+ENGINE_LIB = engine/libsdl2d.a
 LFLAGS := $(SDL2_LFLAGS) -lm
 
 TARGET = deadly-duck
@@ -58,8 +58,11 @@ TARGET = deadly-duck
 
 all: $(TARGET)
 
-$(TARGET): $(OBJ)
-	$(CC) -o $@ $^ $(LFLAGS)
+$(TARGET): $(OBJ) $(ENGINE_LIB)
+	$(CC) -o $@ $(OBJ) $(ENGINE_LIB) $(LFLAGS)
+
+$(ENGINE_LIB):
+	$(MAKE) -C engine
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -69,6 +72,7 @@ install:
 
 clean:
 	rm -f $(OBJ) $(TARGET)
+	$(MAKE) -C engine clean
 
 run: $(TARGET)
 	./$(TARGET)

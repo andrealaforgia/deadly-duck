@@ -199,16 +199,15 @@ void render_ui(game_ptr game) {
         char score_text[32];
         snprintf(score_text, sizeof(score_text), "%d", game->score);
 
-        const int score_scale = 2;
         const int bottom_margin = 5;
         const int right_margin = 5;
 
-        int text_width = get_bitmap_text_width_scaled(&game->font, score_text, score_scale);
+        int text_width = get_bitmap_text_width(&game->font, score_text);
         int x_pos = LOGICAL_WIDTH - text_width - right_margin;
-        int y_pos = LOGICAL_HEIGHT - (7 * score_scale) - bottom_margin;
+        int y_pos = LOGICAL_HEIGHT - 7 - bottom_margin;
 
-        render_bitmap_text_scaled(&game->font, &game->graphics_context, score_text,
-                                 x_pos, y_pos, FONT_COLOR_WHITE, score_scale);
+        render_bitmap_text(&game->font, &game->graphics_context, score_text,
+                           x_pos, y_pos, FONT_COLOR_WHITE);
     }
 }
 

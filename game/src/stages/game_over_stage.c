@@ -101,15 +101,14 @@ static void render_game_over(game_over_stage_state_ptr state) {
 
     // Render GAME OVER text scrolling from bottom to center
     const char* game_over_text = "GAME OVER";
-    const int text_scale = 5;  // Large text
 
     // Calculate text width to center horizontally
-    int text_width = get_bitmap_text_width_scaled(&game->font, game_over_text, text_scale);
+    int text_width = get_bitmap_text_width(&game->font, game_over_text);
     int text_x = (LOGICAL_WIDTH - text_width) / 2;
 
-    // Render in big red letters
-    render_bitmap_text_scaled(&game->font, &game->graphics_context, game_over_text,
-                             text_x, (int)state->game_over_y, FONT_COLOR_RED, text_scale);
+    // Render in red letters
+    render_bitmap_text(&game->font, &game->graphics_context, game_over_text,
+                       text_x, (int)state->game_over_y, FONT_COLOR_RED);
 
     // Present the rendered frame
     SDL_RenderPresent(game->graphics_context.renderer);
