@@ -10,7 +10,6 @@
 #define GAME_SRC_STAGES_PLAYING_STAGE_H_
 
 #include <stdbool.h>
-#include <SDL.h>
 
 #include "game.h"
 #include "stage.h"

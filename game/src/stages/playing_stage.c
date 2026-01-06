@@ -7,7 +7,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <SDL.h>
 
 #include "constants.h"
 #include "player_controller.h"
@@ -79,7 +78,7 @@ static void playing_cleanup(stage_ptr stage) {
 
 static void update_gameplay(playing_stage_state_ptr state) {
     game_ptr game = state->game;
-    Uint32 current_time = SDL_GetTicks();
+    timestamp_ms_t current_time = get_clock_ticks_ms();
 
     // Check for game over
     if (game->lives <= 0) {

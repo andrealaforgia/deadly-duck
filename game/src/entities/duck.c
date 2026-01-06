@@ -4,6 +4,7 @@
  */
 
 #include "duck.h"
+#include "clock.h"
 
 void duck_init(duck_t* duck, float x, float y) {
     duck->x = x;
@@ -18,7 +19,7 @@ void duck_init(duck_t* duck, float x, float y) {
 
 void duck_update(duck_t* duck) {
     if (duck->shooting) {
-        Uint32 current_time = SDL_GetTicks();
+        int current_time = get_clock_ticks_ms();
         if (current_time - duck->shoot_start_time > 100) {
             duck->shooting = false;
         }

@@ -10,7 +10,7 @@
 #define GAME_SRC_STAGES_TRIBUTE_STAGE_H_
 
 #include <stdbool.h>
-#include <SDL.h>
+#include "types.h"
 
 #include "game.h"
 #include "stage.h"
@@ -21,7 +21,7 @@
 typedef struct {
     game_ptr game;
     float scroll_y;           // Current scroll position
-    Uint32 start_time;        // When stage started
+    timestamp_ms_t start_time;        // When stage started
     bool waiting_for_space;   // Waiting for user to press space
 } tribute_stage_state_t;
 

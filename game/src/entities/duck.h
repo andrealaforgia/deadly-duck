@@ -7,7 +7,7 @@
 #define GAME_ENTITIES_DUCK_H_
 
 #include <stdbool.h>
-#include <SDL.h>
+#include "types.h"
 
 /**
  * Duck entity structure
@@ -18,9 +18,9 @@ typedef struct {
     float vx;          // Velocity X
     bool facing_right; // True if facing right, false if facing left
     bool shooting;     // True if currently shooting
-    Uint32 shoot_start_time;  // When shooting started
+    timestamp_ms_t shoot_start_time;  // When shooting started
     bool dead;         // True if duck is dead
-    Uint32 death_time; // When duck died
+    timestamp_ms_t death_time; // When duck died
 } duck_t;
 
 // Duck sprite dimensions (2x scale)

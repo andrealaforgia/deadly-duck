@@ -8,8 +8,6 @@
 #ifndef SPRITE_ATLAS_H
 #define SPRITE_ATLAS_H
 
-#include <SDL.h>
-
 /**
  * Sprite rectangle definition
  */
@@ -38,10 +36,5 @@ extern const sprite_rect_t SPRITE_JELLYFISH_FRAMES[4];
 
 // Heart sprite for lives
 extern const sprite_rect_t SPRITE_HEART;
-
-/**
- * @brief Get SDL_Rect from sprite_rect_t
- */
-SDL_Rect sprite_to_sdl_rect(const sprite_rect_t* sprite);
 
 #endif // SPRITE_ATLAS_H

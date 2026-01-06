@@ -4,6 +4,7 @@
  */
 
 #include "crab.h"
+#include "clock.h"
 #include <stdlib.h>
 
 void crabs_init_all(crab_t* crabs, int count, int logical_width, float y_position) {
@@ -20,12 +21,12 @@ void crabs_init_all(crab_t* crabs, int count, int logical_width, float y_positio
         crabs[i].off_screen = false;
         crabs[i].dropping = false;
         crabs[i].drop_start_time = 0;
-        crabs[i].next_drop_time = SDL_GetTicks() + 3000 + (rand() % 5000);
+        crabs[i].next_drop_time = get_clock_ticks_ms() + 3000 + (rand() % 5000);
     }
 }
 
 void crabs_update_all(crab_t* crabs, int count, brick_t* bricks, int brick_count,
-                      int logical_width, Uint32 current_time,
+                      int logical_width, timestamp_ms_t current_time,
                       void (*play_sound_callback)(void*, int), void* sound_context) {
     for (int i = 0; i < count; i++) {
         if (!crabs[i].alive) continue;  // Skip dead crabs

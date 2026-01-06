@@ -13,11 +13,12 @@
 #include "sprite_atlas.h"
 #include "constants.h"
 #include "score.h"
+#include "clock.h"
 #include "event_system.h"
 #include "game_events.h"
 
 static void kill_duck(game_ptr game) {
-    Uint32 current_time = SDL_GetTicks();
+    int current_time = get_clock_ticks_ms();
     game->duck.dead = true;
     game->duck.death_time = current_time;
     game->lives--;

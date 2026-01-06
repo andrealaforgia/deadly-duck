@@ -7,7 +7,7 @@
 #define GAME_ENTITIES_JELLYFISH_H_
 
 #include <stdbool.h>
-#include <SDL.h>
+#include "types.h"
 
 /**
  * Jellyfish enemy structure
@@ -18,7 +18,7 @@ typedef struct {
     float vx;          // Velocity X (horizontal movement)
     bool moving_right; // True if moving right, false if moving left
     int anim_frame;    // Current animation frame (0-3)
-    Uint32 last_anim_time;  // Last animation frame change time
+    timestamp_ms_t last_anim_time;  // Last animation frame change time
 } jellyfish_t;
 
 // Jellyfish sprite dimensions (2x scale)
@@ -47,6 +47,6 @@ void jellyfish_init_all(jellyfish_t* jellyfish, int count, int logical_width, fl
  * @param logical_width Screen width for bounds checking
  * @param current_time Current game time for animation
  */
-void jellyfish_update_all(jellyfish_t* jellyfish, int count, int logical_width, Uint32 current_time);
+void jellyfish_update_all(jellyfish_t* jellyfish, int count, int logical_width, timestamp_ms_t current_time);
 
 #endif  // GAME_ENTITIES_JELLYFISH_H_

@@ -4,6 +4,7 @@
  */
 
 #include "brick.h"
+#include "types.h"
 
 void bricks_pool_init(brick_t* bricks, int count) {
     for (int i = 0; i < count; i++) {
@@ -29,7 +30,7 @@ bool brick_spawn(brick_t* bricks, int count, float x, float y) {
     return false;  // Pool is full
 }
 
-void bricks_update_all(brick_t* bricks, int count, int lake_start_y, Uint32 current_time) {
+void bricks_update_all(brick_t* bricks, int count, int lake_start_y, timestamp_ms_t current_time) {
     for (int i = 0; i < count; i++) {
         if (bricks[i].active && !bricks[i].landed) {
             // Fall downward

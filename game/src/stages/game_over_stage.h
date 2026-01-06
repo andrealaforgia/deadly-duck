@@ -9,7 +9,7 @@
 #define GAME_SRC_STAGES_GAME_OVER_STAGE_H_
 
 #include <stdbool.h>
-#include <SDL.h>
+#include "types.h"
 
 #include "game.h"
 #include "stage.h"
@@ -20,7 +20,7 @@
 typedef struct {
     game_ptr game;
     float game_over_y;    // Y position of GAME OVER text
-    Uint32 start_time;    // When stage started
+    timestamp_ms_t start_time;    // When stage started
 } game_over_stage_state_t;
 
 typedef game_over_stage_state_t* game_over_stage_state_ptr;

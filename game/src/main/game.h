@@ -10,13 +10,14 @@
 #define GAME_MAIN_GAME_H_
 
 #include <stdbool.h>
-#include <SDL.h>
+#include "types.h"
 
 #include "graphics.h"
 #include "texture.h"
 #include "bitmap_font.h"
 #include "audio.h"
 #include "event_system.h"
+#include "keyboard.h"
 
 // Entity modules
 #include "duck.h"
@@ -62,6 +63,7 @@ typedef struct {
     graphics_context_t graphics_context;
     audio_context_t audio_context;
     event_system_t event_system;
+    keyboard_state_t keyboard_state;
 
     // Resources
     texture_t sprite_sheet;
@@ -77,7 +79,7 @@ typedef struct {
 
     // Tribute screen state
     float scroll_y;
-    Uint32 tribute_start_time;
+    timestamp_ms_t tribute_start_time;
     bool tribute_waiting;  // True if waiting for space key before scrolling
 
     // Game over screen state

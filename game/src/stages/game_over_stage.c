@@ -6,10 +6,13 @@
 #include "game_over_stage.h"
 
 #include <stdlib.h>
-#include <SDL.h>
 
 #include "constants.h"
 #include "bitmap_font.h"
+#include "frame.h"
+#include "clock.h"
+#include "keyboard.h"
+#include "events.h"
 
 // Forward declarations for stage callbacks
 static void game_over_init(stage_ptr stage, game_ptr game);
@@ -40,7 +43,7 @@ static void game_over_init(stage_ptr stage, game_ptr game) {
 
     state->game = game;
     state->game_over_y = LOGICAL_HEIGHT;  // Start from bottom of screen
-    state->start_time = SDL_GetTicks();
+    state->start_time = get_clock_ticks_ms();
 
     stage->state = state;
 }
@@ -63,18 +66,18 @@ static void game_over_cleanup(stage_ptr stage) {
 }
 
 static void handle_input(game_over_stage_state_ptr state) {
-    SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-        switch (event.type) {
-            case SDL_QUIT:
-                state->game->running = false;
-                break;
-            case SDL_KEYDOWN:
-                if (event.key.keysym.sym == SDLK_ESCAPE) {
-                    state->game->running = false;
-                }
-                break;
-        }
+    // Check for quit events using engine event system
+    event_t engine_event = poll_event();
+    if (engine_event == QUIT_EVENT) {
+        state->game->running = false;
+        return;
+    }
+    
+    // Check keyboard state using engine
+    keyboard_state_t* keyboard_state = &state->game->keyboard_state;
+    
+    if (is_esc_key_pressed(keyboard_state)) {
+        state->game->running = false;
     }
 }
 
@@ -95,9 +98,8 @@ static void update_scroll(game_over_stage_state_ptr state) {
 static void render_game_over(game_over_stage_state_ptr state) {
     game_ptr game = state->game;
 
-    // Draw black background
-    SDL_SetRenderDrawColor(game->graphics_context.renderer, 0, 0, 0, 255);
-    SDL_RenderClear(game->graphics_context.renderer);
+    // Clear screen using engine
+    clear_frame(&game->graphics_context);
 
     // Render GAME OVER text scrolling from bottom to center
     const char* game_over_text = "GAME OVER";
@@ -110,8 +112,8 @@ static void render_game_over(game_over_stage_state_ptr state) {
     render_bitmap_text(&game->font, &game->graphics_context, game_over_text,
                        text_x, (int)state->game_over_y, FONT_COLOR_RED);
 
-    // Present the rendered frame
-    SDL_RenderPresent(game->graphics_context.renderer);
+    // Present the rendered frame using engine
+    render_frame(&game->graphics_context);
 }
 
 game_stage_action_t handle_game_over_stage(game_over_stage_state_ptr state) {

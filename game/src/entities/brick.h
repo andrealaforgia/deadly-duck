@@ -7,7 +7,7 @@
 #define GAME_ENTITIES_BRICK_H_
 
 #include <stdbool.h>
-#include <SDL.h>
+#include "types.h"
 
 /**
  * Brick structure
@@ -17,7 +17,7 @@ typedef struct {
     float y;           // Y position
     bool active;       // True if brick is falling or landed
     bool landed;       // True if brick has landed on lake surface
-    Uint32 land_time;  // When brick landed (for timeout)
+    timestamp_ms_t land_time;  // When brick landed (for timeout)
 } brick_t;
 
 // Brick sprite dimensions
@@ -56,6 +56,6 @@ bool brick_spawn(brick_t* bricks, int count, float x, float y);
  * @param lake_start_y Y position of lake surface
  * @param current_time Current game time
  */
-void bricks_update_all(brick_t* bricks, int count, int lake_start_y, Uint32 current_time);
+void bricks_update_all(brick_t* bricks, int count, int lake_start_y, timestamp_ms_t current_time);
 
 #endif  // GAME_ENTITIES_BRICK_H_

@@ -1,9 +1,9 @@
 #include <stdbool.h>
 #include <stdio.h>
-#include <SDL.h>
 #include "constants.h"
 #include "game.h"
 #include "stage_manager.h"
+#include "frame_limiter.h"
 
 int main(int argc, char* argv[]) {
     (void)argc;
@@ -28,13 +28,12 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Initialize frame limiter
+    int target_fps = 1000 / FRAME_DELAY;  // Convert from frame delay to FPS
+    frame_limiter_t frame_limiter = create_frame_limiter(target_fps);
+
     // Game loop
-    Uint32 frame_start;
-    int frame_time;
-
     while (game.running) {
-        frame_start = SDL_GetTicks();
-
         // Update stages and handle transitions
         game_stage_action_t action = stage_manager_update(&stage_manager, &game);
 
@@ -42,11 +41,8 @@ int main(int argc, char* argv[]) {
             game.running = false;
         }
 
-        // Frame rate limiting
-        frame_time = SDL_GetTicks() - frame_start;
-        if (frame_time < FRAME_DELAY) {
-            SDL_Delay(FRAME_DELAY - frame_time);
-        }
+        // Frame rate limiting using engine
+        frame_limiter_wait(&frame_limiter);
     }
 
     // Cleanup

@@ -4,6 +4,7 @@
  */
 
 #include "entity_manager.h"
+#include "clock.h"
 
 #include <stdlib.h>
 #include "constants.h"
@@ -47,7 +48,7 @@ void initialize_all_entities(game_ptr game) {
         game->crabs[i].dropping = false;
         game->crabs[i].drop_start_time = 0;
         // Random time between 3-8 seconds before first drop
-        game->crabs[i].next_drop_time = SDL_GetTicks() + 3000 + (rand() % 5000);
+        game->crabs[i].next_drop_time = get_clock_ticks_ms() + 3000 + (rand() % 5000);
     }
 
     // Initialize bricks pool (all inactive)
@@ -80,6 +81,6 @@ void initialize_all_entities(game_ptr game) {
         game->jellyfish[i].vx = moving_right ? speed : -speed;
 
         game->jellyfish[i].anim_frame = i % 4;  // Stagger animation frames
-        game->jellyfish[i].last_anim_time = SDL_GetTicks();
+        game->jellyfish[i].last_anim_time = get_clock_ticks_ms();
     }
 }

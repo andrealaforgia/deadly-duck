@@ -32,7 +32,3 @@ const sprite_rect_t SPRITE_JELLYFISH_FRAMES[4] = {
 // Heart sprite for lives
 const sprite_rect_t SPRITE_HEART = {78, 0, 8, 7};
 
-SDL_Rect sprite_to_sdl_rect(const sprite_rect_t* sprite) {
-    SDL_Rect rect = {sprite->x, sprite->y, sprite->w, sprite->h};
-    return rect;
-}

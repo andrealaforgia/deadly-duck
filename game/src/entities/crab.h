@@ -7,7 +7,7 @@
 #define GAME_ENTITIES_CRAB_H_
 
 #include <stdbool.h>
-#include <SDL.h>
+#include "types.h"
 
 #include "brick.h"
 
@@ -23,8 +23,8 @@ typedef struct {
     bool has_brick;    // True if crab is carrying a brick
     bool off_screen;   // True if crab has gone off screen
     bool dropping;     // True if crab is currently dropping brick
-    Uint32 drop_start_time;  // When brick drop animation started
-    Uint32 next_drop_time;   // When crab will drop next brick
+    timestamp_ms_t drop_start_time;  // When brick drop animation started
+    timestamp_ms_t next_drop_time;   // When crab will drop next brick
 } crab_t;
 
 // Crab sprite dimensions (2x scale)
@@ -61,7 +61,7 @@ void crabs_init_all(crab_t* crabs, int count, int logical_width, float y_positio
  * @param sound_context Audio context for sound callback
  */
 void crabs_update_all(crab_t* crabs, int count, brick_t* bricks, int brick_count,
-                      int logical_width, Uint32 current_time,
+                      int logical_width, timestamp_ms_t current_time,
                       void (*play_sound_callback)(void*, int), void* sound_context);
 
 #endif  // GAME_ENTITIES_CRAB_H_

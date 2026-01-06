@@ -7,7 +7,6 @@
 #define GAME_ENTITIES_PROJECTILE_H_
 
 #include <stdbool.h>
-#include <SDL.h>
 
 /**
  * Popcorn projectile structure

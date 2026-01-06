@@ -6,7 +6,6 @@
 #include "resource_manager.h"
 
 #include <stdio.h>
-#include <SDL_image.h>
 
 #include "constants.h"
 #include "graphics.h"
@@ -20,27 +19,14 @@ bool load_game_resources(game_ptr game) {
     game->graphics_context = init_graphics_context(0, 0, WINDOWED, true);
 
     // Set logical size to fixed dimensions from constants for pixel-perfect rendering
-    SDL_RenderSetLogicalSize(game->graphics_context.renderer, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+    set_logical_size(&game->graphics_context, LOGICAL_WIDTH, LOGICAL_HEIGHT);
 
-    // Load sprite sheet with white color key (special handling needed)
-    // The engine's load_texture uses black as transparent, but this sprite sheet uses white
-    SDL_Surface* sprite_surface = IMG_Load("game/assets/sprites/sprite_sheet_pixelart.png");
-    if (!sprite_surface) {
-        printf("Failed to load sprite sheet surface\n");
-        return false;
-    }
-
-    // Set white as transparent color key
-    SDL_SetColorKey(sprite_surface, SDL_TRUE, SDL_MapRGB(sprite_surface->format, 255, 255, 255));
-
-    // Create texture from surface
-    game->sprite_sheet.texture = SDL_CreateTextureFromSurface(game->graphics_context.renderer, sprite_surface);
-    game->sprite_sheet.width = sprite_surface->w;
-    game->sprite_sheet.height = sprite_surface->h;
-    SDL_FreeSurface(sprite_surface);
-
+    // Load sprite sheet using engine abstraction with white color key
+    game->sprite_sheet = load_texture_with_colorkey(game->graphics_context.renderer, 
+                                                   "game/assets/sprites/sprite_sheet_pixelart.png",
+                                                   255, 255, 255);
     if (!game->sprite_sheet.texture) {
-        printf("Failed to create sprite sheet texture\n");
+        printf("Failed to load sprite sheet\n");
         return false;
     }
 

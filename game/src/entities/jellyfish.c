@@ -4,6 +4,7 @@
  */
 
 #include "jellyfish.h"
+#include "clock.h"
 
 void jellyfish_init_all(jellyfish_t* jellyfish, int count, int logical_width, float y_position) {
     // Initialize jellyfish spaced evenly across the screen
@@ -15,11 +16,11 @@ void jellyfish_init_all(jellyfish_t* jellyfish, int count, int logical_width, fl
         jellyfish[i].vx = (i % 2 == 0) ? 2.0f : -2.0f;  // Alternate directions
         jellyfish[i].moving_right = (i % 2 == 0);
         jellyfish[i].anim_frame = i % 4;  // Stagger animation frames (0, 1, 2, 3)
-        jellyfish[i].last_anim_time = SDL_GetTicks();
+        jellyfish[i].last_anim_time = get_clock_ticks_ms();
     }
 }
 
-void jellyfish_update_all(jellyfish_t* jellyfish, int count, int logical_width, Uint32 current_time) {
+void jellyfish_update_all(jellyfish_t* jellyfish, int count, int logical_width, timestamp_ms_t current_time) {
     // Check if any jellyfish hit the edge (all bounce together)
     bool should_bounce = false;
     bool new_direction = false;
