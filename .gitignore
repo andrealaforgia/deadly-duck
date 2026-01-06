@@ -1,0 +1,46 @@
+# Compiled binaries
+deadly-duck
+*.o
+*.a
+*.so
+*.dylib
+
+# Build artifacts
+*.exe
+*.out
+*.app
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Dependency files
+*.d
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Compiled Object files
+*.slo
+*.lo
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Linker files
+*.ilk
+*.map
+*.exp
+
+# Static analysis
+*.gcno
+*.gcda
+*.gcov

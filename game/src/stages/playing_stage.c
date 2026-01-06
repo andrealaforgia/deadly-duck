@@ -1,0 +1,134 @@
+/**
+ * @file playing_stage.c
+ * @brief Main gameplay stage implementation
+ */
+
+#include "playing_stage.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <SDL.h>
+
+#include "constants.h"
+#include "player_controller.h"
+#include "collision_detector.h"
+#include "game_renderer.h"
+#include "duck.h"
+#include "projectile.h"
+#include "brick.h"
+#include "crab.h"
+#include "jellyfish.h"
+
+// Forward declarations for stage callbacks
+static void playing_init(stage_ptr stage, game_ptr game);
+static game_stage_action_t playing_update(stage_ptr stage);
+static void playing_cleanup(stage_ptr stage);
+
+// Helper function
+static void update_gameplay(playing_stage_state_ptr state);
+
+stage_ptr create_playing_stage_instance(void) {
+    stage_ptr stage = (stage_ptr)malloc(sizeof(stage_t));
+    if (!stage) return NULL;
+
+    stage->state = NULL;
+    stage->init = playing_init;
+    stage->update = playing_update;
+    stage->cleanup = playing_cleanup;
+    stage->name = "Playing";
+
+    return stage;
+}
+
+static void playing_init(stage_ptr stage, game_ptr game) {
+    playing_stage_state_ptr state = (playing_stage_state_ptr)malloc(sizeof(playing_stage_state_t));
+    if (!state) return;
+
+    state->game = game;
+    stage->state = state;
+}
+
+static game_stage_action_t playing_update(stage_ptr stage) {
+    playing_stage_state_ptr state = (playing_stage_state_ptr)stage->state;
+
+    // Handle player input
+    if (!player_process_input(state->game)) {
+        state->game->running = false;
+        return PROGRESS;
+    }
+
+    // Update game logic
+    update_gameplay(state);
+
+    // Process collisions
+    process_all_collisions(state->game);
+
+    // Render the game
+    render_game(state->game);
+
+    return PROGRESS;
+}
+
+static void playing_cleanup(stage_ptr stage) {
+    if (stage->state) {
+        free(stage->state);
+        stage->state = NULL;
+    }
+}
+
+
+static void update_gameplay(playing_stage_state_ptr state) {
+    game_ptr game = state->game;
+    Uint32 current_time = SDL_GetTicks();
+
+    // Check for game over
+    if (game->lives <= 0) {
+        game->current_screen = SCREEN_GAME_OVER;
+        return;
+    }
+
+    // Handle duck respawn after death (2 seconds delay)
+    if (game->duck.dead) {
+        if (current_time - game->duck.death_time >= 2000) {
+            duck_respawn(&game->duck, LOGICAL_WIDTH / 2.0f, LAKE_START_Y - DUCK_HEIGHT);
+        }
+    }
+
+    // Update duck position (only if alive)
+    if (!game->duck.dead) {
+        float new_duck_x = game->duck.x + game->duck.vx;
+
+        // Check collision with landed bricks
+        if (!check_duck_landed_brick_collision(game, new_duck_x)) {
+            game->duck.x = new_duck_x;
+        } else {
+            game->duck.vx = 0;  // Stop duck movement
+        }
+
+        // Keep duck within screen bounds
+        if (game->duck.x < 0) {
+            game->duck.x = 0;
+            game->duck.vx = 0;
+        } else if (game->duck.x + DUCK_WIDTH > LOGICAL_WIDTH) {
+            game->duck.x = LOGICAL_WIDTH - DUCK_WIDTH;
+            game->duck.vx = 0;
+        }
+
+        // Update duck state
+        duck_update(&game->duck);
+    }
+
+    // Update projectiles
+    popcorn_update_all(game->popcorn, MAX_POPCORN, LOGICAL_HEIGHT);
+
+    // Update jellyfish
+    jellyfish_update_all(game->jellyfish, NUM_JELLYFISH, LOGICAL_WIDTH, current_time);
+
+    // Update crabs
+    crabs_update_all(game->crabs, NUM_CRABS, game->bricks, MAX_BRICKS,
+                     LOGICAL_WIDTH, current_time, (void (*)(void*, int))play_sound, &game->audio_context);
+
+    // Update bricks
+    bricks_update_all(game->bricks, MAX_BRICKS, LAKE_START_Y, current_time);
+}
+

@@ -1,0 +1,311 @@
+================================================================================
+                    GALAGA ARCHITECTURE SUMMARY
+          Quick Reference for Deadly Duck Implementation
+================================================================================
+
+1. TECHNOLOGY STACK
+   - Language: C (C99)
+   - Graphics: SDL2 + SDL2_image
+   - Audio: SDL2_mixer
+   - Build: GNU Make
+   - Platform: macOS (Metal), Linux, Windows
+
+2. PROJECT ORGANIZATION
+   
+   galaga/
+   ├── engine/           (Reusable - git submodule)
+   │   └── core/
+   │       ├── graphics/ (Rendering, textures, fonts)
+   │       ├── audio/    (Sound effects, music)
+   │       ├── input/    (Keyboard, mouse, events)
+   │       ├── math/     (Geometry, physics, animation)
+   │       └── utils/    (Logging, CLI parsing, memory)
+   │
+   └── game/             (Game-specific)
+       ├── assets/
+       │   ├── sprites/  (PNG files + sprite_coords.h)
+       │   └── sounds/   (MP3/WAV files)
+       └── src/
+           ├── main/     (Entry point, game state)
+           ├── entities/ (Player, enemies, bullets)
+           ├── managers/ (Entity pools)
+           └── rendering/(Game-specific graphics)
+
+3. SCREEN SETUP
+
+   Galaga: 288x392 (1:1.36 ratio)
+   - Window Height = 90% of screen height
+   - Window Width = Window Height / 1.36
+   
+   Deadly Duck: 1.48:1 ratio (width:height)
+   Option: 224x336 (1.5:1, very close)
+   - Update game_constants.h with new dimensions
+   - All game logic uses logical coordinates
+   - SDL2 automatically scales to window size
+
+4. GRAPHICS PIPELINE
+
+   init_game()
+   ├── Get display bounds
+   ├── Calculate window size
+   ├── init_graphics_context_with_logical_size()
+   │   ├── SDL_Init(SDL_INIT_EVERYTHING)
+   │   ├── Set performance hints (Metal, batching, etc.)
+   │   ├── SDL_CreateWindow() - physical size
+   │   ├── SDL_CreateRenderer() - accelerated with fallback
+   │   └── SDL_RenderSetLogicalSize() - game coordinates
+   ├── init_keyboard_state()
+   ├── init_audio_context()
+   └── load_bitmap_font()
+
+5. RENDERING LOOP
+
+   while (!quit) {
+     1. Handle SDL events (input, quit)
+     2. Update game state (position, velocity, animation)
+     3. Check collisions (AABB)
+     4. Clear frame (black background)
+     5. Render layers (background, entities, HUD)
+     6. Present frame (double-buffering)
+     7. Frame limiting (SDL_Delay or VSync)
+   }
+
+6. SPRITE SYSTEM
+
+   sprite_coords.h:
+   - Defines struct: sprite_rect_t {x, y, width, height}
+   - Array: sprite_rect_t galaga_sprites[SPRITE_COUNT]
+   - Constants: #define PLAYER_BULLET_SPRITE_INDEX 202
+
+   Usage:
+   - Get sprite definition: sprite_rect_t s = sprites[INDEX]
+   - Create SDL_Rect for source (in sprite sheet)
+   - Create SDL_Rect for destination (on screen)
+   - SDL_RenderCopy(renderer, texture, &src, &dst)
+
+7. ENTITY PATTERN
+
+   typedef struct {
+     float x, y;              // Position
+     texture_t sprite_sheet;  // Loaded sprite texture
+     bool active;             // Pooling flag
+   } entity_t;
+
+   Functions:
+   - init_entity(...) -> entity_t
+   - update_entity(entity_t* e, ...)
+   - render_entity(const entity_t* e, ...)
+   - cleanup_entity(entity_t* e)
+
+8. MANAGER PATTERN (for multiple entities)
+
+   typedef struct {
+     entity_t pool[MAX_ENTITIES];
+     texture_t sprite_sheet;
+   } entity_manager_t;
+
+   Functions:
+   - spawn_entity(manager*, x, y)
+   - update_entities(manager*)
+   - render_entities(manager*, context*)
+   - get_entity(manager*, index) -> entity_t*
+
+9. COLLISION DETECTION
+
+   AABB (Axis-Aligned Bounding Box):
+   
+   bool check_collision(float x1, y1, w1, h1,
+                        float x2, y2, w2, h2) {
+     return x1 < x2+w2 && x1+w1 > x2 &&
+            y1 < y2+h2 && y1+h1 > y2;
+   }
+
+   Example:
+   - Loop through all bullets
+   - Loop through all enemies
+   - check_collision(bullet_pos, enemy_pos)
+   - On hit: deactivate both, add score, play sound, spawn effect
+
+10. AUDIO SYSTEM
+
+    Load:
+    - Mix_Chunk* chunk = Mix_LoadWAV(filepath)
+    - Store in chunks array with index
+    
+    Play:
+    - Mix_PlayChannel(-1, chunk, 0)  // -1 = any free channel
+    - Mix_Volume(-1, 0-128)          // -1 = all channels
+    
+    Formats: WAV, MP3, OGG
+
+11. BUILD SYSTEM
+
+    Makefile:
+    - Compiler: gcc
+    - Standard: C99
+    - Flags: -ggdb3 -Ofast -Wall -Wextra -pedantic-errors
+    - SDL2 config: $(shell sdl2-config --cflags/libs)
+    - Link: -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lm
+
+    Commands:
+    make install        # Install dependencies
+    make clean && make  # Build
+    make lint           # Code style check
+    make format         # Auto-format
+
+12. COMMAND-LINE OPTIONS
+
+    --help              Show help
+    --graphics-info     Display GPU/monitor info
+    --show-fps          Display FPS counter
+    --vsync             Enable vertical synchronization
+    --display=N         Use display N (0-based)
+    --fps=N             Target frame rate
+    --volume=N          Set volume (0-128)
+
+13. ASSET STRUCTURE
+
+    game/assets/
+    ├── sprites/
+    │   ├── main.png                (All game sprites)
+    │   ├── text.png                (Bitmap font 8x7)
+    │   └── sprite_coords.h         (Sprite definitions)
+    └── sounds/
+        ├── effects/
+        │   ├── shoot.mp3
+        │   ├── explosion.mp3
+        │   └── ...
+        └── music/
+            └── background.mp3
+
+14. PERFORMANCE OPTIMIZATIONS
+
+    SDL Hints:
+    - SDL_HINT_RENDER_DRIVER: "metal" (macOS acceleration)
+    - SDL_HINT_RENDER_SCALE_QUALITY: "1" (linear filtering)
+    - SDL_HINT_RENDER_BATCHING: "1" (batch rendering)
+    - SDL_HINT_FRAMEBUFFER_ACCELERATION: "1"
+
+    Frame Limiting:
+    - Option 1: Hardware VSync (--vsync flag)
+    - Option 2: Manual SDL_Delay(16) for ~60 FPS
+
+    Logical Size Scaling:
+    - Game logic at fixed resolution (e.g., 224x336)
+    - Rendering scales to any window size
+    - Separates game logic from display scaling
+
+15. DEVELOPMENT WORKFLOW
+
+    Phase 1: Setup
+    └─ Copy engine, create game directories, update dimensions
+    
+    Phase 2: Assets
+    └─ Create sprite sheets, sprite_coords.h, verify loading
+    
+    Phase 3: Core Entities
+    └─ Player (movement, rendering), projectiles, enemies
+    
+    Phase 4: Game Loop
+    └─ Collision detection, scoring, HUD, sound effects
+    
+    Phase 5: Polish
+    └─ Additional enemy types, levels, UI, high scores
+
+16. DEADLY DUCK ADAPTATION
+
+    Step 1: Update game_constants.h
+    #define GAME_WIDTH 224
+    #define GAME_HEIGHT 336    // 1.5:1 ratio
+    
+    Step 2: Create sprite sheets
+    - duck_main.png (player, bullets, effects)
+    - enemies.png (flying enemies)
+    - ui.png (fonts, UI elements)
+    
+    Step 3: Create sprite_coords.h
+    #define DUCK_SPRITE_INDEX 0
+    #define DUCK_BULLET_INDEX 1
+    // ... etc
+    
+    Step 4: Create entities
+    - duck.h/c (player)
+    - deadly_bullet.h/c (player projectile)
+    - flying_enemy.h/c (enemy)
+    - enemy_projectile.h/c (enemy fire)
+    
+    Step 5: Implement game loop in main.c
+    - Initialize entities
+    - Collision detection
+    - Scoring and HUD
+    - Sound effects
+    
+    Step 6: Update Makefile
+    - Add new source directories
+    - Update include paths
+
+================================================================================
+KEY ADVANTAGES OF THIS ARCHITECTURE
+================================================================================
+
+✓ Modular Design
+  - Engine separated from game code
+  - Reusable across multiple games
+  - Easy to maintain and extend
+
+✓ Resolution Independence
+  - Logical size system
+  - Works with any screen aspect ratio
+  - Automatic scaling to window size
+
+✓ Performance
+  - Hardware acceleration (Metal, OpenGL, D3D)
+  - Render batching
+  - Optimized for 60 FPS
+
+✓ Entity Management
+  - Pool pattern for efficient memory use
+  - Simple manager for multiple entities
+  - Easy collision detection
+
+✓ Cross-Platform
+  - Builds on macOS, Linux, Windows
+  - Platform-specific renderers
+  - Same code, different platforms
+
+✓ Well-Organized
+  - Clear separation of concerns
+  - Consistent naming conventions
+  - Easy to find and modify code
+
+================================================================================
+FILE REFERENCES
+================================================================================
+
+Core Graphics:
+- engine/core/graphics/graphics.h/c      Rendering context
+- engine/core/graphics/texture.h/c       Image loading
+- engine/core/graphics/frame.h/c         Buffer management
+
+Game Setup:
+- game/src/main/main.c                   Entry point
+- game/src/main/game.c/h                 Game state
+- game/src/main/game_constants.h         Dimensions
+- game/src/rendering/galaga_graphics.c   Custom init
+
+Entities:
+- game/src/entities/player_ship.h/c      Player
+- game/src/entities/bullet.h/c           Projectiles
+- game/src/entities/enemy.h/c            Enemies
+- game/src/entities/explosion.h/c        Effects
+
+Assets:
+- game/assets/sprites/sprite_coords.h    Sprite definitions
+- game/assets/sprites/*.png              Sprite sheets
+- game/assets/sounds/*/*.mp3             Audio files
+
+Build:
+- Makefile                               Build configuration
+- CPPLINT.cfg                            Code style
+
+================================================================================
