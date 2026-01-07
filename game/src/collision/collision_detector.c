@@ -16,6 +16,7 @@
 #include "clock.h"
 #include "event_system.h"
 #include "game_events.h"
+#include "collision.h"
 
 static void kill_duck(game_ptr game) {
     int current_time = get_clock_ticks_ms();
@@ -54,11 +55,8 @@ static void check_popcorn_jellyfish_collisions(game_ptr game) {
             if (!jellyfish) continue;
             
             // AABB collision detection with jellyfish
-            bool collision =
-                popcorn->x < jellyfish->x + JELLYFISH_WIDTH &&
-                popcorn->x + POPCORN_WIDTH > jellyfish->x &&
-                popcorn->y < jellyfish->y + JELLYFISH_HEIGHT &&
-                popcorn->y + POPCORN_HEIGHT > jellyfish->y;
+            bool collision = aabb_collision(popcorn->x, popcorn->y, POPCORN_WIDTH, POPCORN_HEIGHT,
+                                          jellyfish->x, jellyfish->y, JELLYFISH_WIDTH, JELLYFISH_HEIGHT);
 
             if (collision) {
                 // Reflect popcorn downward
@@ -83,11 +81,8 @@ static void check_popcorn_crab_collisions(game_ptr game) {
             if (!crab || !crab->alive) continue;
 
             // AABB collision detection
-            bool collision =
-                popcorn->x < crab->x + CRAB_WIDTH &&
-                popcorn->x + POPCORN_WIDTH > crab->x &&
-                popcorn->y < crab->y + CRAB_HEIGHT &&
-                popcorn->y + POPCORN_HEIGHT > crab->y;
+            bool collision = aabb_collision(popcorn->x, popcorn->y, POPCORN_WIDTH, POPCORN_HEIGHT,
+                                          crab->x, crab->y, CRAB_WIDTH, CRAB_HEIGHT);
 
             if (collision) {
                 // Mark crab as dead
@@ -125,11 +120,8 @@ static void check_reflected_popcorn_duck_collisions(game_ptr game) {
         if (!popcorn || !popcorn->active || !popcorn->reflected) continue;
 
         // AABB collision detection with duck
-        bool collision =
-            popcorn->x < game->duck.x + DUCK_WIDTH &&
-            popcorn->x + POPCORN_WIDTH > game->duck.x &&
-            popcorn->y < game->duck.y + DUCK_HEIGHT &&
-            popcorn->y + POPCORN_HEIGHT > game->duck.y;
+        bool collision = aabb_collision(popcorn->x, popcorn->y, POPCORN_WIDTH, POPCORN_HEIGHT,
+                                      game->duck.x, game->duck.y, DUCK_WIDTH, DUCK_HEIGHT);
 
         if (collision) {
             kill_duck(game);
@@ -153,11 +145,8 @@ static void check_brick_duck_collisions(game_ptr game) {
         if (!brick || !brick->active || brick->landed) continue;  // Only check falling bricks
 
         // AABB collision detection
-        bool collision =
-            game->duck.x < brick->x + BRICK_WIDTH &&
-            game->duck.x + DUCK_WIDTH > brick->x &&
-            game->duck.y < brick->y + BRICK_HEIGHT &&
-            game->duck.y + DUCK_HEIGHT > brick->y;
+        bool collision = aabb_collision(game->duck.x, game->duck.y, DUCK_WIDTH, DUCK_HEIGHT,
+                                      brick->x, brick->y, BRICK_WIDTH, BRICK_HEIGHT);
 
         if (collision) {
             kill_duck(game);
@@ -179,11 +168,8 @@ bool check_duck_landed_brick_collision(game_ptr game, float new_duck_x) {
         if (!brick || !brick->landed) continue;
         
         // Check if duck would collide with brick
-        bool collision =
-            new_duck_x < brick->x + BRICK_WIDTH &&
-            new_duck_x + DUCK_WIDTH > brick->x &&
-            game->duck.y < brick->y + BRICK_HEIGHT &&
-            game->duck.y + DUCK_HEIGHT > brick->y;
+        bool collision = aabb_collision(new_duck_x, game->duck.y, DUCK_WIDTH, DUCK_HEIGHT,
+                                      brick->x, brick->y, BRICK_WIDTH, BRICK_HEIGHT);
 
         if (collision) {
             return true;
