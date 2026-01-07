@@ -17,7 +17,7 @@
 #include "jellyfish.h"
 #include "object_pool.h"
 #include "player_controller.h"
-#include "projectile.h"
+#include "popcorn.h"
 
 // Forward declarations for stage callbacks
 static void playing_init(stage_ptr stage, game_ptr game);
@@ -108,7 +108,7 @@ static void update_gameplay(playing_stage_state_ptr state) {
         }
     }
 
-    // Update projectiles
+    // Update popcorn
     popcorn_update_all(&game->popcorn_pool, LOGICAL_HEIGHT);
 
     // Update jellyfish

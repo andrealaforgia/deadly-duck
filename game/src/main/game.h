@@ -25,7 +25,7 @@
 #include "crab.h"
 #include "duck.h"
 #include "jellyfish.h"
-#include "projectile.h"
+#include "popcorn.h"
 
 // Forward declarations for stage system
 typedef struct stage_t stage_t;

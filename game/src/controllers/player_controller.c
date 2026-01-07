@@ -10,7 +10,7 @@
 #include "events.h"
 #include "game.h"
 #include "keyboard.h"
-#include "projectile.h"
+#include "popcorn.h"
 #include <stdio.h>
 
 bool player_process_input(game_ptr game) {
@@ -53,7 +53,7 @@ bool player_process_input(game_ptr game) {
             // Play quack sound
             play_sound(&game->audio_context, SOUND_QUACK);
 
-            // Spawn a popcorn projectile
+            // Spawn popcorn
             const int duck_sprite_width = DUCK_WIDTH;
             float offset = game->duck.facing_right ? duck_sprite_width * 0.7f : duck_sprite_width * 0.3f;
 

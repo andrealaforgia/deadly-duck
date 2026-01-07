@@ -15,7 +15,7 @@
 #include "duck.h"
 #include "game.h"
 #include "jellyfish.h"
-#include "projectile.h"
+#include "popcorn.h"
 
 /**
  * @brief Create and initialize a duck entity at specified position

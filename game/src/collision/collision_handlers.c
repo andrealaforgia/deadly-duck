@@ -14,7 +14,7 @@
 #include "event_system.h"
 #include "game_events.h"
 #include "jellyfish.h"
-#include "projectile.h"
+#include "popcorn.h"
 
 bool handle_popcorn_crab_collision(game_ptr game, popcorn_ptr popcorn, crab_ptr crab) {
     if (!popcorn || !crab || !popcorn->active || popcorn->reflected || !crab->alive) {

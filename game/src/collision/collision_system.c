@@ -9,7 +9,7 @@
 #include "crab.h"
 #include "duck.h"
 #include "jellyfish.h"
-#include "projectile.h"
+#include "popcorn.h"
 
 static bool system_initialized = false;
 

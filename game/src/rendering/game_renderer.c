@@ -11,7 +11,7 @@
 #include "duck.h"
 #include "frame.h"
 #include "jellyfish.h"
-#include "projectile.h"
+#include "popcorn.h"
 #include "sprite_atlas.h"
 #include <stdio.h>
 

@@ -1,9 +1,9 @@
 /**
- * @file projectile.c
- * @brief Popcorn projectile implementation
+ * @file popcorn.c
+ * @brief Popcorn implementation
  */
 
-#include "projectile.h"
+#include "popcorn.h"
 
 bool popcorn_spawn(object_pool_t *pool, float x, float y) {
     size_t index;
@@ -41,7 +41,7 @@ void popcorn_update_all(object_pool_t *pool, int logical_height) {
     }
 }
 
-void popcorn_reflect(popcorn_ptr projectile) {
-    projectile->vy = -projectile->vy; // Reverse direction
-    projectile->reflected = true;
+void popcorn_reflect(popcorn_ptr popcorn) {
+    popcorn->vy = -popcorn->vy; // Reverse direction
+    popcorn->reflected = true;
 }

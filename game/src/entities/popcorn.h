@@ -1,16 +1,16 @@
 /**
- * @file projectile.h
- * @brief Popcorn projectile entity
+ * @file popcorn.h
+ * @brief Popcorn entity
  */
 
-#ifndef GAME_ENTITIES_PROJECTILE_H_
-#define GAME_ENTITIES_PROJECTILE_H_
+#ifndef GAME_ENTITIES_POPCORN_H_
+#define GAME_ENTITIES_POPCORN_H_
 
 #include "object_pool.h"
 #include <stdbool.h>
 
 /**
- * Popcorn projectile structure
+ * Popcorn entity structure
  */
 typedef struct {
     float x;        // X position
@@ -29,12 +29,12 @@ typedef popcorn_t *popcorn_ptr;
 #define POPCORN_SPEED 6.0f // Upward speed
 
 // Pool size
-#define MAX_POPCORN 10 // Maximum number of popcorn projectiles on screen
+#define MAX_POPCORN 10 // Maximum number of popcorn on screen
 
 /**
- * Spawn a popcorn projectile using object pool
+ * Spawn a popcorn using object pool
  *
- * @param pool Object pool for popcorn projectiles
+ * @param pool Object pool for popcorn
  * @param x Starting X position
  * @param y Starting Y position
  * @return true if spawned successfully, false if pool is full
@@ -42,18 +42,18 @@ typedef popcorn_t *popcorn_ptr;
 bool popcorn_spawn(object_pool_t *pool, float x, float y);
 
 /**
- * Update all active popcorn projectiles using object pool
+ * Update all active popcorn using object pool
  *
- * @param pool Object pool for popcorn projectiles
+ * @param pool Object pool for popcorn
  * @param logical_height Screen height for bounds checking
  */
 void popcorn_update_all(object_pool_t *pool, int logical_height);
 
 /**
- * Reflect a popcorn projectile downward
+ * Reflect a popcorn downward
  *
- * @param projectile Projectile to reflect
+ * @param popcorn Popcorn to reflect
  */
-void popcorn_reflect(popcorn_ptr projectile);
+void popcorn_reflect(popcorn_ptr popcorn);
 
-#endif // GAME_ENTITIES_PROJECTILE_H_
+#endif // GAME_ENTITIES_POPCORN_H_
