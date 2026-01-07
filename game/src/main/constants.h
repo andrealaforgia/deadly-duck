@@ -1,3 +1,11 @@
+/**
+ * @file constants.h
+ * @brief Global game constants and configuration values
+ *
+ * Defines all the core constants used throughout the game including
+ * screen dimensions, timing, layout calculations, and scaling factors.
+ */
+
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
