@@ -79,7 +79,7 @@ duck_ptr duck_create(float x, float y, float bounds_min_x, float bounds_max_x) {
     return self;
 }
 
-void duck_init_bounds(duck_ptr self, float x, float y, float bounds_min_x, float bounds_max_x) {
+static void duck_init_bounds(duck_ptr self, float x, float y, float bounds_min_x, float bounds_max_x) {
     if (!self) return;
     
     // Initialize basic state using procedural function
@@ -223,11 +223,11 @@ bool duck_is_facing_right(const duck_ptr self) {
     return self ? self->facing_right : false;
 }
 
-bool duck_is_shooting(const duck_ptr self) {
+static bool duck_is_shooting(const duck_ptr self) {
     return self ? self->shooting : false;
 }
 
-bool duck_is_alive(const duck_ptr self) {
+static bool duck_is_alive(const duck_ptr self) {
     return self ? (!self->dead && self->health > 0) : false;
 }
 

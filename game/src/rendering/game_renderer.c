@@ -15,7 +15,7 @@
 #include "projectile.h"
 #include "brick.h"
 
-void render_lake(game_ptr game) {
+static void render_lake(game_ptr game) {
     const int lake_height = LAKE_HEIGHT;
     const int lake_start_y = LAKE_START_Y;
 
@@ -31,7 +31,7 @@ void render_lake(game_ptr game) {
     }
 }
 
-void render_duck(game_ptr game) {
+static void render_duck(game_ptr game) {
     if (!game->sprite_sheet.texture) return;
 
     const int duck_scale = 2;  // 2x scale
@@ -67,7 +67,7 @@ void render_duck(game_ptr game) {
     }
 }
 
-void render_popcorn(game_ptr game) {
+static void render_popcorn(game_ptr game) {
     if (!game->sprite_sheet.texture) return;
 
     const int popcorn_scale = 1;   // 1x scale
@@ -84,7 +84,7 @@ void render_popcorn(game_ptr game) {
     }
 }
 
-void render_crabs(game_ptr game) {
+static void render_crabs(game_ptr game) {
     if (!game->sprite_sheet.texture) return;
 
     const int crab_scale = 2;    // 2x scale
@@ -111,7 +111,7 @@ void render_crabs(game_ptr game) {
     }
 }
 
-void render_jellyfish(game_ptr game) {
+static void render_jellyfish(game_ptr game) {
     if (!game->sprite_sheet.texture) return;
 
     const int jellyfish_scale = 2;  // 2x scale
@@ -129,7 +129,7 @@ void render_jellyfish(game_ptr game) {
     }
 }
 
-void render_bricks(game_ptr game) {
+static void render_bricks(game_ptr game) {
     if (!game->sprite_sheet.texture) return;
 
     const int brick_scale = 1;    // 1x scale
@@ -146,7 +146,7 @@ void render_bricks(game_ptr game) {
     }
 }
 
-void render_ui(game_ptr game) {
+static void render_ui(game_ptr game) {
     // Draw lives indicator (small ducks at bottom-left)
     if (game->sprite_sheet.texture) {
         const int life_duck_scale = 1;  // 1x scale
@@ -185,7 +185,7 @@ void render_ui(game_ptr game) {
     }
 }
 
-void render_entities(game_ptr game) {
+static void render_entities(game_ptr game) {
     render_duck(game);
     render_popcorn(game);
     render_crabs(game);

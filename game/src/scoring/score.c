@@ -8,7 +8,7 @@
 #include "event_system.h"
 #include "game_events.h"
 
-void add_score(game_ptr game, int points) {
+static void add_score(game_ptr game, int points) {
     if (game->score + points > MAX_SCORE) {
         game->score = MAX_SCORE;
         return;

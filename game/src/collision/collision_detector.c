@@ -40,7 +40,7 @@ static void kill_duck(game_ptr game) {
     publish(&game->event_system, &event);
 }
 
-void check_popcorn_jellyfish_collisions(game_ptr game) {
+static void check_popcorn_jellyfish_collisions(game_ptr game) {
     for (size_t i = 0; i < game->popcorn_pool.capacity; i++) {
         if (!pool_is_active(&game->popcorn_pool, i)) continue;
         
@@ -69,7 +69,7 @@ void check_popcorn_jellyfish_collisions(game_ptr game) {
     }
 }
 
-void check_popcorn_crab_collisions(game_ptr game) {
+static void check_popcorn_crab_collisions(game_ptr game) {
     for (size_t i = 0; i < game->popcorn_pool.capacity; i++) {
         if (!pool_is_active(&game->popcorn_pool, i)) continue;
         
@@ -115,7 +115,7 @@ void check_popcorn_crab_collisions(game_ptr game) {
     }
 }
 
-void check_reflected_popcorn_duck_collisions(game_ptr game) {
+static void check_reflected_popcorn_duck_collisions(game_ptr game) {
     if (game->duck.dead) return;
 
     for (size_t i = 0; i < game->popcorn_pool.capacity; i++) {
@@ -143,7 +143,7 @@ void check_reflected_popcorn_duck_collisions(game_ptr game) {
     }
 }
 
-void check_brick_duck_collisions(game_ptr game) {
+static void check_brick_duck_collisions(game_ptr game) {
     if (game->duck.dead) return;
 
     for (size_t i = 0; i < game->brick_pool.capacity; i++) {
