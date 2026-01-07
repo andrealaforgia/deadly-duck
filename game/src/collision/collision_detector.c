@@ -55,9 +55,9 @@ static void check_popcorn_jellyfish_collisions(game_ptr game) {
             
             // AABB collision detection with jellyfish
             bool collision =
-                popcorn->x < jellyfish->x + (16 * 2) &&  // Jellyfish width
+                popcorn->x < jellyfish->x + JELLYFISH_WIDTH &&
                 popcorn->x + POPCORN_WIDTH > jellyfish->x &&
-                popcorn->y < jellyfish->y + (13 * 2) &&  // Jellyfish height
+                popcorn->y < jellyfish->y + JELLYFISH_HEIGHT &&
                 popcorn->y + POPCORN_HEIGHT > jellyfish->y;
 
             if (collision) {
