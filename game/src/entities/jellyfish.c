@@ -49,9 +49,9 @@ void jellyfish_update_all(object_pool_t* pool, int logical_width, timestamp_ms_t
             jellyfish->x = logical_width - JELLYFISH_WIDTH;
         }
 
-        // Animate jellyfish (change frame every 250ms)
-        if (current_time - jellyfish->last_anim_time >= 250) {
-            jellyfish->anim_frame = (jellyfish->anim_frame + 1) % 4;
+        // Animate jellyfish
+        if (current_time - jellyfish->last_anim_time >= ANIMATION_CYCLE_MS) {
+            jellyfish->anim_frame = (jellyfish->anim_frame + 1) % JELLYFISH_FRAME_COUNT;
             jellyfish->last_anim_time = current_time;
         }
     }

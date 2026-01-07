@@ -29,6 +29,10 @@ typedef jellyfish_t* jellyfish_ptr;
 #define JELLYFISH_WIDTH (16 * 2)  // Wider frame at 2x scale
 #define JELLYFISH_HEIGHT (13 * 2)  // Jellyfish sprite height at 2x scale
 
+// Animation constants
+#define JELLYFISH_FRAME_COUNT 4      // Number of animation frames
+#define ANIMATION_CYCLE_MS 250       // Time per animation frame in milliseconds
+
 // Pool size
 #define NUM_JELLYFISH 4  // Number of jellyfish on screen
 
