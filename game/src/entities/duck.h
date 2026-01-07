@@ -93,15 +93,6 @@ void duck_respawn(duck_ptr duck, float x, float y);
  */
 duck_ptr duck_create(float x, float y, float bounds_min_x, float bounds_max_x);
 
-/**
- * @brief Initialize duck with Object-oriented features
- * @param self Duck instance
- * @param x Starting X position
- * @param y Starting Y position
- * @param bounds_min_x Left movement boundary
- * @param bounds_max_x Right movement boundary
- */
-void duck_init_bounds(duck_ptr self, float x, float y, float bounds_min_x, float bounds_max_x);
 
 /**
  * @brief Destroy duck instance (frees memory if allocated with duck_create)
@@ -202,19 +193,6 @@ void duck_get_bounds(const duck_ptr self, float* x, float* y, float* width, floa
  */
 bool duck_is_facing_right(const duck_ptr self);
 
-/**
- * @brief Check if duck is currently shooting
- * @param self Duck instance
- * @return true if shooting, false otherwise
- */
-bool duck_is_shooting(const duck_ptr self);
-
-/**
- * @brief Check if duck is alive (health > 0 and not dead)
- * @param self Duck instance
- * @return true if alive, false if dead
- */
-bool duck_is_alive(const duck_ptr self);
 
 /**
  * @brief Get duck health

@@ -17,13 +17,6 @@
 // Point values for different actions
 #define CRAB_HIT_SCORE 30
 
-/**
- * Add points to the player's score
- *
- * @param game Game state
- * @param points Points to add (clamped to MAX_SCORE)
- */
-void add_score(game_ptr game, int points);
 
 /**
  * Award points for hitting a crab

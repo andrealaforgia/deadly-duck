@@ -9,29 +9,6 @@
 #include <stdbool.h>
 #include "game.h"
 
-/**
- * @brief Check and handle collisions between popcorn and jellyfish (reflection)
- * @param game Game state
- */
-void check_popcorn_jellyfish_collisions(game_ptr game);
-
-/**
- * @brief Check and handle collisions between popcorn and crabs
- * @param game Game state
- */
-void check_popcorn_crab_collisions(game_ptr game);
-
-/**
- * @brief Check and handle collisions between reflected popcorn and duck
- * @param game Game state
- */
-void check_reflected_popcorn_duck_collisions(game_ptr game);
-
-/**
- * @brief Check and handle collisions between falling bricks and duck
- * @param game Game state
- */
-void check_brick_duck_collisions(game_ptr game);
 
 /**
  * @brief Check if duck collides with any landed bricks at given position

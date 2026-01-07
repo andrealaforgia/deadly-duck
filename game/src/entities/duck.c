@@ -13,6 +13,9 @@
 // Private helper functions
 static void duck_update_shooting(duck_ptr duck);
 static void duck_init_extended(duck_ptr duck);
+static void duck_init_bounds(duck_ptr self, float x, float y, float bounds_min_x, float bounds_max_x);
+static bool duck_is_shooting(const duck_ptr self);
+static bool duck_is_alive(const duck_ptr self);
 
 // =============================================================================
 // PROCEDURAL INTERFACE (Backward Compatibility)
