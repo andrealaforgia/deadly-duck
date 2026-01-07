@@ -6,8 +6,8 @@
 #ifndef PLAYER_CONTROLLER_H
 #define PLAYER_CONTROLLER_H
 
-#include <stdbool.h>
 #include "game.h"
+#include <stdbool.h>
 
 /**
  * @brief Process player input using engine input system

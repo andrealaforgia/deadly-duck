@@ -4,13 +4,13 @@
  */
 
 #include "player_controller.h"
-#include "game.h"
 #include "audio.h"
-#include "projectile.h"
-#include "duck.h"
-#include "keyboard.h"
-#include "events.h"
 #include "clock.h"
+#include "duck.h"
+#include "events.h"
+#include "game.h"
+#include "keyboard.h"
+#include "projectile.h"
 #include <stdio.h>
 
 bool player_process_input(game_ptr game) {
@@ -19,10 +19,10 @@ bool player_process_input(game_ptr game) {
     if (engine_event == QUIT_EVENT) {
         return false;
     }
-    
+
     // Check keyboard state using engine
-    keyboard_state_t* keyboard_state = &game->keyboard_state;
-    
+    keyboard_state_t *keyboard_state = &game->keyboard_state;
+
     if (is_esc_key_pressed(keyboard_state)) {
         return false;
     }
@@ -32,7 +32,7 @@ bool player_process_input(game_ptr game) {
         // Handle horizontal movement with continuous key checking
         bool left_pressed = is_left_key_pressed(keyboard_state);
         bool right_pressed = is_right_key_pressed(keyboard_state);
-        
+
         if (left_pressed && !right_pressed) {
             game->duck.vx = -DUCK_SPEED;
             game->duck.facing_right = false;
@@ -43,7 +43,7 @@ bool player_process_input(game_ptr game) {
             // Stop when no keys or both keys are pressed
             game->duck.vx = 0;
         }
-        
+
         // Handle shooting
         if (is_space_key_pressed(keyboard_state)) {
             // Trigger shooting
@@ -57,11 +57,9 @@ bool player_process_input(game_ptr game) {
             const int duck_sprite_width = DUCK_WIDTH;
             float offset = game->duck.facing_right ? duck_sprite_width * 0.7f : duck_sprite_width * 0.3f;
 
-            popcorn_spawn(&game->popcorn_pool,
-                         game->duck.x + offset,
-                         game->duck.y);
+            popcorn_spawn(&game->popcorn_pool, game->duck.x + offset, game->duck.y);
         }
     }
-    
+
     return true;
 }

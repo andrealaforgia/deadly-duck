@@ -8,8 +8,8 @@
 #ifndef GAME_SRC_STAGES_GAME_OVER_STAGE_H_
 #define GAME_SRC_STAGES_GAME_OVER_STAGE_H_
 
-#include <stdbool.h>
 #include "types.h"
+#include <stdbool.h>
 
 #include "game.h"
 #include "stage.h"
@@ -19,11 +19,11 @@
  */
 typedef struct {
     game_ptr game;
-    float game_over_y;    // Y position of GAME OVER text
-    timestamp_ms_t start_time;    // When stage started
+    float game_over_y;         // Y position of GAME OVER text
+    timestamp_ms_t start_time; // When stage started
 } game_over_stage_state_t;
 
-typedef game_over_stage_state_t* game_over_stage_state_ptr;
+typedef game_over_stage_state_t *game_over_stage_state_ptr;
 
 /**
  * Handle game over stage logic (input, update, render)
@@ -33,4 +33,4 @@ typedef game_over_stage_state_t* game_over_stage_state_ptr;
  */
 game_stage_action_t handle_game_over_stage(game_over_stage_state_ptr state);
 
-#endif  // GAME_SRC_STAGES_GAME_OVER_STAGE_H_
+#endif // GAME_SRC_STAGES_GAME_OVER_STAGE_H_

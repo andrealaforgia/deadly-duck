@@ -7,8 +7,8 @@
 
 #include <stdio.h>
 
-#include "constants.h"
 #include "audio.h"
+#include "constants.h"
 
 bool load_game_audio(game_ptr game) {
     // Initialize audio context using engine's audio system

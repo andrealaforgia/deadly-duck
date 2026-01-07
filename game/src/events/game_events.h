@@ -34,7 +34,7 @@ typedef struct {
 
 // Collision event data structures
 typedef struct {
-    const char* strategy_name;
+    const char *strategy_name;
     size_t total_count;
     float entities_per_second;
 } collision_detected_data_t;
@@ -45,9 +45,9 @@ typedef struct {
 } high_collision_rate_data_t;
 
 typedef struct {
-    const char* entity_type_name;
+    const char *entity_type_name;
     size_t collision_count;
     size_t threshold;
 } entity_collision_count_data_t;
 
-#endif  // GAME_SRC_EVENTS_GAME_EVENTS_H_
+#endif // GAME_SRC_EVENTS_GAME_EVENTS_H_

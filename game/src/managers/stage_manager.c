@@ -5,10 +5,10 @@
 
 #include "stage_manager.h"
 
-#include <stdio.h>
-#include "tribute_stage.h"
-#include "playing_stage.h"
 #include "game_over_stage.h"
+#include "playing_stage.h"
+#include "tribute_stage.h"
+#include <stdio.h>
 
 bool stage_manager_init(stage_manager_ptr manager, game_ptr game) {
     // Create all stages
@@ -42,16 +42,16 @@ game_stage_action_t stage_manager_update(stage_manager_ptr manager, game_ptr gam
         // Switch to new stage
         manager->previous_screen = game->current_screen;
         switch (game->current_screen) {
-            case SCREEN_TRIBUTE:
-            case SCREEN_COVER:
-                manager->current_stage = manager->tribute_stage;
-                break;
-            case SCREEN_GAME:
-                manager->current_stage = manager->playing_stage;
-                break;
-            case SCREEN_GAME_OVER:
-                manager->current_stage = manager->game_over_stage;
-                break;
+        case SCREEN_TRIBUTE:
+        case SCREEN_COVER:
+            manager->current_stage = manager->tribute_stage;
+            break;
+        case SCREEN_GAME:
+            manager->current_stage = manager->playing_stage;
+            break;
+        case SCREEN_GAME_OVER:
+            manager->current_stage = manager->game_over_stage;
+            break;
         }
 
         // Initialize new stage

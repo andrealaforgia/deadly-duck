@@ -22,7 +22,7 @@ typedef struct {
     game_screen_t previous_screen;
 } stage_manager_t;
 
-typedef stage_manager_t* stage_manager_ptr;
+typedef stage_manager_t *stage_manager_ptr;
 
 /**
  * @brief Initialize stage manager and create all stages

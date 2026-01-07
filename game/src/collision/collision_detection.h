@@ -14,7 +14,7 @@
 /**
  * @brief Simple AABB collision detection
  * @param x1 First rectangle x position
- * @param y1 First rectangle y position  
+ * @param y1 First rectangle y position
  * @param w1 First rectangle width
  * @param h1 First rectangle height
  * @param x2 Second rectangle x position
@@ -23,7 +23,6 @@
  * @param h2 Second rectangle height
  * @return true if rectangles overlap
  */
-bool check_aabb_collision(float x1, float y1, float w1, float h1,
-                         float x2, float y2, float w2, float h2);
+bool check_aabb_collision(float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2);
 
 #endif // COLLISION_DETECTION_H

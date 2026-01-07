@@ -4,8 +4,8 @@
  */
 
 #include "score.h"
-#include "game.h"
 #include "event_system.h"
+#include "game.h"
 #include "game_events.h"
 
 static void add_score(game_ptr game, int points) {
@@ -16,12 +16,10 @@ static void add_score(game_ptr game, int points) {
     game->score += points;
 }
 
-void score_crab_hit(game_ptr game) {
-    add_score(game, CRAB_HIT_SCORE);
-}
+void score_crab_hit(game_ptr game) { add_score(game, CRAB_HIT_SCORE); }
 
-static void on_crab_destroyed(const game_event_t* event, void* user_data) {
-    (void)event;  // Unused - event data not needed for scoring
+static void on_crab_destroyed(const game_event_t *event, void *user_data) {
+    (void)event; // Unused - event data not needed for scoring
     game_ptr game = (game_ptr)user_data;
     add_score(game, CRAB_HIT_SCORE);
 }

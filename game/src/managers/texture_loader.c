@@ -12,9 +12,8 @@
 
 bool load_game_textures(game_ptr game, const graphics_context_ptr graphics_context) {
     // Load sprite sheet using engine abstraction with white color key
-    game->sprite_sheet = load_texture_with_colorkey(graphics_context->renderer, 
-                                                   "game/assets/sprites/sprite_sheet_pixelart.png",
-                                                   255, 255, 255);
+    game->sprite_sheet = load_texture_with_colorkey(graphics_context->renderer,
+                                                    "game/assets/sprites/sprite_sheet_pixelart.png", 255, 255, 255);
     if (!game->sprite_sheet.texture) {
         printf("Failed to load sprite sheet\n");
         return false;

@@ -14,5 +14,4 @@
  */
 void render_game(game_ptr game);
 
-
 #endif // GAME_RENDERER_H

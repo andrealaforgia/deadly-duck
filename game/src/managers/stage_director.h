@@ -37,7 +37,7 @@ typedef struct {
     game_screen_t previous_screen;
 } stage_director_t;
 
-typedef stage_director_t* stage_director_ptr;
+typedef stage_director_t *stage_director_ptr;
 
 /**
  * @brief Initialize stage director
@@ -46,17 +46,6 @@ typedef stage_director_t* stage_director_ptr;
  * @return true if initialization successful, false otherwise
  */
 bool stage_director_init(stage_director_ptr director, game_ptr game);
-
-/**
- * @brief Register a stage factory for a screen type
- * @param director Stage director
- * @param screen_type Screen type to associate with the stage
- * @param create_stage_fn Factory function to create the stage
- * @return true if registration successful, false otherwise
- */
-bool stage_director_register_stage(stage_director_ptr director, 
-                                   game_screen_t screen_type,
-                                   stage_ptr (*create_stage_fn)(void));
 
 /**
  * @brief Update current stage and handle transitions

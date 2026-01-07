@@ -9,12 +9,12 @@
 #ifndef GAME_ENTITIES_DUCK_H_
 #define GAME_ENTITIES_DUCK_H_
 
-#include <stdbool.h>
 #include "types.h"
+#include <stdbool.h>
 
 /**
  * Duck entity structure
- * 
+ *
  * Contains all state for a duck entity, designed to be used with
  * both procedural functions and Object-oriented methods.
  */
@@ -24,31 +24,31 @@ typedef struct duck_t {
     float y;           // Y position
     float vx;          // Velocity X
     bool facing_right; // True if facing right, false if facing left
-    
+
     // Combat state
-    bool shooting;     // True if currently shooting
-    timestamp_ms_t shoot_start_time;  // When shooting started
-    
+    bool shooting;                   // True if currently shooting
+    timestamp_ms_t shoot_start_time; // When shooting started
+
     // Life state
-    bool dead;         // True if duck is dead
+    bool dead;                 // True if duck is dead
     timestamp_ms_t death_time; // When duck died
-    
+
     // Extended Object-oriented state (optional)
-    float bounds_min_x;    // Left movement boundary
-    float bounds_max_x;    // Right movement boundary  
-    int health;           // Health points (0 = dead)
-    float max_speed;      // Maximum movement speed
+    float bounds_min_x; // Left movement boundary
+    float bounds_max_x; // Right movement boundary
+    int health;         // Health points (0 = dead)
+    float max_speed;    // Maximum movement speed
 } duck_t;
 
 // Pointer typedef for duck
-typedef duck_t* duck_ptr;
+typedef duck_t *duck_ptr;
 
 // Duck constants
-#define DUCK_WIDTH (14 * 2)   // Sprite width at 2x scale
-#define DUCK_HEIGHT (11 * 2)  // Sprite height at 2x scale
-#define DUCK_SPEED 4.0f       // Default movement speed
-#define DUCK_SHOOT_DURATION 100  // Shooting animation duration in ms
-#define DUCK_DEFAULT_HEALTH 3    // Default health points
+#define DUCK_WIDTH (14 * 2)     // Sprite width at 2x scale
+#define DUCK_HEIGHT (11 * 2)    // Sprite height at 2x scale
+#define DUCK_SPEED 4.0f         // Default movement speed
+#define DUCK_SHOOT_DURATION 100 // Shooting animation duration in ms
+#define DUCK_DEFAULT_HEALTH 3   // Default health points
 
 // =============================================================================
 // PROCEDURAL INTERFACE (Backward Compatibility)
@@ -92,7 +92,6 @@ void duck_respawn(duck_ptr duck, float x, float y);
  * @return Pointer to created duck, NULL on failure
  */
 duck_ptr duck_create(float x, float y, float bounds_min_x, float bounds_max_x);
-
 
 /**
  * @brief Destroy duck instance (frees memory if allocated with duck_create)
@@ -167,7 +166,7 @@ void duck_set_bounds(duck_ptr self, float min_x, float max_x);
  * @param x Output X position
  * @param y Output Y position
  */
-void duck_get_position(const duck_ptr self, float* x, float* y);
+void duck_get_position(const duck_ptr self, float *x, float *y);
 
 /**
  * @brief Get duck velocity
@@ -184,7 +183,7 @@ float duck_get_velocity(const duck_ptr self);
  * @param width Output width
  * @param height Output height
  */
-void duck_get_bounds(const duck_ptr self, float* x, float* y, float* width, float* height);
+void duck_get_bounds(const duck_ptr self, float *x, float *y, float *width, float *height);
 
 /**
  * @brief Check if duck is facing right
@@ -192,7 +191,6 @@ void duck_get_bounds(const duck_ptr self, float* x, float* y, float* width, floa
  * @return true if facing right, false if facing left
  */
 bool duck_is_facing_right(const duck_ptr self);
-
 
 /**
  * @brief Get duck health
@@ -208,4 +206,4 @@ int duck_get_health(const duck_ptr self);
  */
 bool duck_is_within_bounds(const duck_ptr self);
 
-#endif  // GAME_ENTITIES_DUCK_H_
+#endif // GAME_ENTITIES_DUCK_H_

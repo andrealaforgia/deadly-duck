@@ -24,7 +24,7 @@ bool handle_popcorn_crab_collision(game_ptr game, popcorn_ptr popcorn, crab_ptr 
 /**
  * @brief Handle popcorn hitting a jellyfish (reflects popcorn)
  * @param game Game state
- * @param popcorn Popcorn projectile  
+ * @param popcorn Popcorn projectile
  * @param jellyfish Target jellyfish
  * @return true if collision occurred
  */

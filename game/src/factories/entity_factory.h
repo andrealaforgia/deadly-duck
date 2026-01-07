@@ -10,12 +10,12 @@
 #ifndef ENTITY_FACTORY_H
 #define ENTITY_FACTORY_H
 
-#include "game.h"
-#include "duck.h"
+#include "brick.h"
 #include "crab.h"
+#include "duck.h"
+#include "game.h"
 #include "jellyfish.h"
 #include "projectile.h"
-#include "brick.h"
 
 /**
  * @brief Create and initialize a duck entity at specified position
@@ -41,8 +41,7 @@ bool create_crab(crab_ptr crab);
  * @param moving_right Direction of movement
  * @param anim_offset Animation frame offset
  */
-void create_jellyfish(jellyfish_ptr jellyfish, float x, float y,
-                      float group_velocity_x, bool moving_right,
+void create_jellyfish(jellyfish_ptr jellyfish, float x, float y, float group_velocity_x, bool moving_right,
                       int anim_offset);
 
 /**

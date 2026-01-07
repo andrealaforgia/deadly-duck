@@ -9,8 +9,8 @@
 #ifndef AUDIO_LOADER_H
 #define AUDIO_LOADER_H
 
-#include <stdbool.h>
 #include "game.h"
+#include <stdbool.h>
 
 /**
  * @brief Load all audio resources for the game

@@ -15,16 +15,16 @@
 // game_ptr is defined in game.h
 
 struct stage_t {
-  void* state;  // Stage-specific state
+    void *state; // Stage-specific state
 
-  void (*init)(stage_t* stage, game_ptr game);
-  game_stage_action_t (*update)(stage_t* stage);
-  void (*cleanup)(stage_t* stage);
+    void (*init)(stage_t *stage, game_ptr game);
+    game_stage_action_t (*update)(stage_t *stage);
+    void (*cleanup)(stage_t *stage);
 
-  const char* name;  // For debugging
+    const char *name; // For debugging
 };
 
-typedef stage_t* stage_ptr;
+typedef stage_t *stage_ptr;
 
 // Factory functions for creating stages
 stage_ptr create_tribute_stage_instance(void);
@@ -34,4 +34,4 @@ stage_ptr create_game_over_stage_instance(void);
 // Common stage operations
 void destroy_stage(stage_ptr stage);
 
-#endif  // GAME_SRC_STAGES_STAGE_H_
+#endif // GAME_SRC_STAGES_STAGE_H_

@@ -4,9 +4,9 @@
  */
 
 #include "entity_initializer.h"
-#include "entity_factory.h"
-#include "constants.h"
 #include "clock.h"
+#include "constants.h"
+#include "entity_factory.h"
 #include "object_pool.h"
 
 #include <stdlib.h>
@@ -18,8 +18,7 @@ static void initialize_jellyfish(game_ptr game);
 void initialize_all_entities(game_ptr game) {
     // Initialize duck in the center, right on top of the lake
     const int duck_height = DUCK_HEIGHT;
-    create_duck(&game->duck, LOGICAL_WIDTH / 2.0f,
-                LAKE_START_Y - duck_height);
+    create_duck(&game->duck, LOGICAL_WIDTH / 2.0f, LAKE_START_Y - duck_height);
 
     // Create object pools using factory
     create_entity_pools(game);
@@ -34,10 +33,9 @@ void initialize_all_entities(game_ptr game) {
 static void initialize_crabs(game_ptr game) {
     for (int i = 0; i < NUM_CRABS; i++) {
         size_t crab_index;
-        crab_ptr crab =
-            (crab_ptr)pool_acquire(&game->crab_pool, &crab_index);
+        crab_ptr crab = (crab_ptr)pool_acquire(&game->crab_pool, &crab_index);
         if (!crab) {
-            break;  // Pool is full
+            break; // Pool is full
         }
 
         // Use factory to create crab with random properties
@@ -53,22 +51,19 @@ static void initialize_jellyfish(game_ptr game) {
     const int jellyfish_spacing = 1;
 
     // Random group movement parameters (all jellyfish move together)
-    float speed = JELLYFISH_MIN_SPEED +
-                  ((float)rand() / RAND_MAX) * JELLYFISH_SPEED_RANGE;
+    float speed = JELLYFISH_MIN_SPEED + ((float)rand() / RAND_MAX) * JELLYFISH_SPEED_RANGE;
     bool moving_right = (rand() % 2) == 0;
     float group_velocity_x = moving_right ? speed : -speed;
 
     // Calculate starting position to center all jellyfish as a group
-    float total_width = (JELLYFISH_WIDTH * NUM_JELLYFISH) +
-                        (jellyfish_spacing * (NUM_JELLYFISH - 1));
+    float total_width = (JELLYFISH_WIDTH * NUM_JELLYFISH) + (jellyfish_spacing * (NUM_JELLYFISH - 1));
     float start_x = (LOGICAL_WIDTH - total_width) / 2.0f;
 
     for (int i = 0; i < NUM_JELLYFISH; i++) {
         size_t jellyfish_index;
-        jellyfish_ptr jellyfish = (jellyfish_ptr)pool_acquire(
-            &game->jellyfish_pool, &jellyfish_index);
+        jellyfish_ptr jellyfish = (jellyfish_ptr)pool_acquire(&game->jellyfish_pool, &jellyfish_index);
         if (!jellyfish) {
-            break;  // Pool is full
+            break; // Pool is full
         }
 
         // Calculate position for this jellyfish

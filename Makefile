@@ -55,7 +55,7 @@ LFLAGS := $(SDL2_LFLAGS) -lm
 
 TARGET = deadly-duck
 
-.PHONY: all install clean run lint
+.PHONY: all install clean run lint format
 
 all: $(TARGET)
 
@@ -90,3 +90,13 @@ lint:
 		-I$(GAME_MANAGERS_DIR) -I$(GAME_FACTORIES_DIR) -I$(GAME_SCORING_DIR) -I$(GAME_EVENTS_DIR) \
 		$(SRC) 2>&1 | grep -v "Cppcheck cannot find all the include files" || true
 	@echo "Game code linting complete."
+
+format:
+	@echo "Formatting C source files..."
+	@if command -v clang-format >/dev/null 2>&1; then \
+		find game/src -name "*.c" -o -name "*.h" | xargs clang-format -i --style="{BasedOnStyle: LLVM, IndentWidth: 4, UseTab: Never, ColumnLimit: 120}"; \
+		echo "Code formatting complete."; \
+	else \
+		echo "clang-format not found. Install with: brew install clang-format"; \
+		echo "Skipping formatting."; \
+	fi

@@ -6,33 +6,37 @@
 #include "jellyfish.h"
 #include "clock.h"
 
-void jellyfish_update_all(object_pool_t* pool, int logical_width, timestamp_ms_t current_time) {
+void jellyfish_update_all(object_pool_t *pool, int logical_width, timestamp_ms_t current_time) {
     // Check if any jellyfish hit the edge (all bounce together)
     bool should_bounce = false;
     bool new_direction = false;
 
     for (size_t i = 0; i < pool->capacity; i++) {
-        if (!pool_is_active(pool, i)) continue;
-        
+        if (!pool_is_active(pool, i))
+            continue;
+
         jellyfish_ptr jellyfish = (jellyfish_ptr)pool_get_at(pool, i);
-        if (!jellyfish) continue;
-        
+        if (!jellyfish)
+            continue;
+
         float new_x = jellyfish->x + jellyfish->vx;
 
         if (new_x < 0 || new_x + JELLYFISH_WIDTH > logical_width) {
             should_bounce = true;
-            new_direction = new_x < 0;  // true = moving right, false = moving left
+            new_direction = new_x < 0; // true = moving right, false = moving left
             break;
         }
     }
 
     // Update all jellyfish together
     for (size_t i = 0; i < pool->capacity; i++) {
-        if (!pool_is_active(pool, i)) continue;
-        
+        if (!pool_is_active(pool, i))
+            continue;
+
         jellyfish_ptr jellyfish = (jellyfish_ptr)pool_get_at(pool, i);
-        if (!jellyfish) continue;
-        
+        if (!jellyfish)
+            continue;
+
         if (should_bounce) {
             // All jellyfish reverse direction together
             jellyfish->vx = -jellyfish->vx;

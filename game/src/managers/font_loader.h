@@ -8,9 +8,9 @@
 #ifndef FONT_LOADER_H
 #define FONT_LOADER_H
 
-#include <stdbool.h>
 #include "game.h"
 #include "graphics_context.h"
+#include <stdbool.h>
 
 /**
  * @brief Load all font resources for the game

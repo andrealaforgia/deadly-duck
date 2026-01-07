@@ -8,21 +8,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "constants.h"
 #include "bitmap_font.h"
-#include "frame.h"
 #include "clock.h"
-#include "keyboard.h"
+#include "constants.h"
 #include "events.h"
+#include "frame.h"
+#include "keyboard.h"
 
 // Tribute text lines
-static const char* TRIBUTE_LINES[] = {
-    "THIS IS A TRIBUTE",
-    "TO ED HODAPP",
-    "WHO ORIGINALLY WROTE",
-    "DEADLY DUCK IN 1982",
-    "FOR SIRIUS SOFTWARE"
-};
+static const char *TRIBUTE_LINES[] = {"THIS IS A TRIBUTE", "TO ED HODAPP", "WHO ORIGINALLY WROTE",
+                                      "DEADLY DUCK IN 1982", "FOR SIRIUS SOFTWARE"};
 static const int NUM_TRIBUTE_LINES = 5;
 
 // Forward declarations for stage callbacks
@@ -37,7 +32,8 @@ static void render_tribute(tribute_stage_state_ptr state);
 
 stage_ptr create_tribute_stage_instance(void) {
     stage_ptr stage = (stage_ptr)malloc(sizeof(stage_t));
-    if (!stage) return NULL;
+    if (!stage)
+        return NULL;
 
     stage->state = NULL;
     stage->init = tribute_init;
@@ -50,12 +46,13 @@ stage_ptr create_tribute_stage_instance(void) {
 
 static void tribute_init(stage_ptr stage, game_ptr game) {
     tribute_stage_state_ptr state = (tribute_stage_state_ptr)malloc(sizeof(tribute_stage_state_t));
-    if (!state) return;
+    if (!state)
+        return;
 
     state->game = game;
-    state->scroll_y = LOGICAL_HEIGHT;  // Start from bottom of screen
+    state->scroll_y = LOGICAL_HEIGHT; // Start from bottom of screen
     state->start_time = get_clock_ticks_ms();
-    state->waiting_for_space = true;  // Wait for space key before scrolling
+    state->waiting_for_space = true; // Wait for space key before scrolling
 
     stage->state = state;
 }
@@ -84,10 +81,10 @@ static void handle_input(tribute_stage_state_ptr state) {
         state->game->running = false;
         return;
     }
-    
+
     // Check keyboard state using engine
-    keyboard_state_t* keyboard_state = &state->game->keyboard_state;
-    
+    keyboard_state_t *keyboard_state = &state->game->keyboard_state;
+
     if (is_esc_key_pressed(keyboard_state)) {
         state->game->running = false;
     } else if (is_space_key_pressed(keyboard_state)) {
@@ -111,7 +108,7 @@ static void update_scroll(tribute_stage_state_ptr state) {
 
     // After cover image scrolls completely off screen, move to game screen
     // Calculate text height dynamically based on scale
-    int estimated_scale = 3;  // Rough estimate
+    int estimated_scale = 3; // Rough estimate
     int text_height = NUM_TRIBUTE_LINES * (7 * estimated_scale + 5);
     // Cover starts 50 pixels after text
     float cover_start_y = state->scroll_y + text_height + 50;
@@ -133,7 +130,7 @@ static void render_tribute(tribute_stage_state_ptr state) {
     clear_frame(&game->graphics_context);
 
     // Find the longest line to calculate scale
-    const char* longest_line = TRIBUTE_LINES[0];
+    const char *longest_line = TRIBUTE_LINES[0];
     int max_len = strlen(TRIBUTE_LINES[0]);
     for (int i = 1; i < NUM_TRIBUTE_LINES; i++) {
         int len = strlen(TRIBUTE_LINES[i]);
@@ -147,17 +144,18 @@ static void render_tribute(tribute_stage_state_ptr state) {
     int target_width = (int)(LOGICAL_WIDTH * 0.9f);
     int unscaled_width = get_bitmap_text_width(&game->font, longest_line);
     int scale = target_width / unscaled_width;
-    if (scale < 1) scale = 1;  // Minimum scale of 1
+    if (scale < 1)
+        scale = 1; // Minimum scale of 1
 
-    int line_height = game->font.char_height * scale + 5;  // Character height * scale + spacing
+    int line_height = game->font.char_height * scale + 5; // Character height * scale + spacing
 
     // Render each line centered
     int current_y = (int)state->scroll_y;
     for (int i = 0; i < NUM_TRIBUTE_LINES; i++) {
         if (i == 1) {
             // Line 2: "TO ED HODAPP" - render "TO " in yellow, "ED HODAPP" in pink
-            const char* to_text = "TO ";
-            const char* name_text = "ED HODAPP";
+            const char *to_text = "TO ";
+            const char *name_text = "ED HODAPP";
 
             // Calculate widths
             int to_width = get_bitmap_text_width_scaled(&game->font, to_text, scale);
@@ -168,19 +166,19 @@ static void render_tribute(tribute_stage_state_ptr state) {
             int line_x = (LOGICAL_WIDTH - total_width) / 2;
 
             // Render "TO " in yellow
-            render_bitmap_text_scaled(&game->font, &game->graphics_context, to_text,
-                                      line_x, current_y, FONT_COLOR_YELLOW, scale);
+            render_bitmap_text_scaled(&game->font, &game->graphics_context, to_text, line_x, current_y,
+                                      FONT_COLOR_YELLOW, scale);
 
             // Render "ED HODAPP" in pink
-            render_bitmap_text_scaled(&game->font, &game->graphics_context, name_text,
-                                      line_x + to_width, current_y, FONT_COLOR_PINK, scale);
+            render_bitmap_text_scaled(&game->font, &game->graphics_context, name_text, line_x + to_width, current_y,
+                                      FONT_COLOR_PINK, scale);
         } else {
             // All other lines in yellow
             int text_width = get_bitmap_text_width_scaled(&game->font, TRIBUTE_LINES[i], scale);
             int text_x = (LOGICAL_WIDTH - text_width) / 2;
 
-            render_bitmap_text_scaled(&game->font, &game->graphics_context, TRIBUTE_LINES[i],
-                                      text_x, current_y, FONT_COLOR_YELLOW, scale);
+            render_bitmap_text_scaled(&game->font, &game->graphics_context, TRIBUTE_LINES[i], text_x, current_y,
+                                      FONT_COLOR_YELLOW, scale);
         }
 
         current_y += line_height;
@@ -191,14 +189,14 @@ static void render_tribute(tribute_stage_state_ptr state) {
         // Blink every 500ms
         int elapsed = elapsed_from(state->start_time);
         if ((elapsed / 500) % 2 == 0) {
-            const char* start_text = "PRESS SPACE TO START";
-            int start_scale = 2;  // Use a fixed scale for the prompt
+            const char *start_text = "PRESS SPACE TO START";
+            int start_scale = 2; // Use a fixed scale for the prompt
             int start_width = get_bitmap_text_width_scaled(&game->font, start_text, start_scale);
             int start_x = (LOGICAL_WIDTH - start_width) / 2;
             int start_y = LOGICAL_HEIGHT / 2;
 
-            render_bitmap_text_scaled(&game->font, &game->graphics_context, start_text,
-                                      start_x, start_y, FONT_COLOR_WHITE, start_scale);
+            render_bitmap_text_scaled(&game->font, &game->graphics_context, start_text, start_x, start_y,
+                                      FONT_COLOR_WHITE, start_scale);
         }
     }
 

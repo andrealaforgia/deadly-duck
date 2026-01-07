@@ -5,19 +5,19 @@
 
 #include "playing_stage.h"
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-#include "constants.h"
-#include "player_controller.h"
-#include "collision_system.h"
-#include "game_renderer.h"
-#include "duck.h"
-#include "object_pool.h"
-#include "projectile.h"
-#include "jellyfish.h"
-#include "crab.h"
 #include "brick.h"
+#include "collision_system.h"
+#include "constants.h"
+#include "crab.h"
+#include "duck.h"
+#include "game_renderer.h"
+#include "jellyfish.h"
+#include "object_pool.h"
+#include "player_controller.h"
+#include "projectile.h"
 
 // Forward declarations for stage callbacks
 static void playing_init(stage_ptr stage, game_ptr game);
@@ -29,7 +29,8 @@ static void update_gameplay(playing_stage_state_ptr state);
 
 stage_ptr create_playing_stage_instance(void) {
     stage_ptr stage = (stage_ptr)malloc(sizeof(stage_t));
-    if (!stage) return NULL;
+    if (!stage)
+        return NULL;
 
     stage->state = NULL;
     stage->init = playing_init;
@@ -42,7 +43,8 @@ stage_ptr create_playing_stage_instance(void) {
 
 static void playing_init(stage_ptr stage, game_ptr game) {
     playing_stage_state_ptr state = (playing_stage_state_ptr)malloc(sizeof(playing_stage_state_t));
-    if (!state) return;
+    if (!state)
+        return;
 
     state->game = game;
     stage->state = state;
@@ -76,7 +78,6 @@ static void playing_cleanup(stage_ptr stage) {
     }
 }
 
-
 static void update_gameplay(playing_stage_state_ptr state) {
     game_ptr game = state->game;
     timestamp_ms_t current_time = get_clock_ticks_ms();
@@ -98,12 +99,12 @@ static void update_gameplay(playing_stage_state_ptr state) {
     if (!game->duck.dead) {
         // Let duck_update handle movement and basic boundary checking
         duck_update(&game->duck);
-        
+
         // Additional collision check with landed bricks after movement
         if (collision_system_check_duck_landing(game, game->duck.x)) {
             // If collision detected, undo the movement
             game->duck.x -= game->duck.vx;
-            game->duck.vx = 0;  // Stop duck movement
+            game->duck.vx = 0; // Stop duck movement
         }
     }
 
@@ -114,10 +115,9 @@ static void update_gameplay(playing_stage_state_ptr state) {
     jellyfish_update_all(&game->jellyfish_pool, LOGICAL_WIDTH, current_time);
 
     // Update crabs
-    crabs_update_all(&game->crab_pool, &game->brick_pool,
-                     LOGICAL_WIDTH, current_time, (void (*)(void*, int))play_sound, &game->audio_context);
+    crabs_update_all(&game->crab_pool, &game->brick_pool, LOGICAL_WIDTH, current_time,
+                     (void (*)(void *, int))play_sound, &game->audio_context);
 
     // Update bricks
     bricks_update_all(&game->brick_pool, LAKE_START_Y, current_time);
 }
-

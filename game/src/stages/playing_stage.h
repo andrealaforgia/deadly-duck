@@ -21,7 +21,7 @@ typedef struct {
     game_ptr game;
 } playing_stage_state_t;
 
-typedef playing_stage_state_t* playing_stage_state_ptr;
+typedef playing_stage_state_t *playing_stage_state_ptr;
 
 /**
  * Handle playing stage logic (input, update, render)
@@ -31,4 +31,4 @@ typedef playing_stage_state_t* playing_stage_state_ptr;
  */
 game_stage_action_t handle_playing_stage(playing_stage_state_ptr state);
 
-#endif  // GAME_SRC_STAGES_PLAYING_STAGE_H_
+#endif // GAME_SRC_STAGES_PLAYING_STAGE_H_

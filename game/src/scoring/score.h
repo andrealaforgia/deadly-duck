@@ -15,10 +15,9 @@
 #define MAX_SCORE 999999
 
 // Point values for different actions
-#define CRAB_HIT_SCORE 30          // Points awarded for destroying a crab
-#define SURVIVAL_BONUS_SCORE 10    // Bonus points for surviving time periods
-#define LEVEL_COMPLETE_BONUS 100   // Bonus points for completing a level
-
+#define CRAB_HIT_SCORE 30        // Points awarded for destroying a crab
+#define SURVIVAL_BONUS_SCORE 10  // Bonus points for surviving time periods
+#define LEVEL_COMPLETE_BONUS 100 // Bonus points for completing a level
 
 /**
  * Award points for hitting a crab
@@ -34,4 +33,4 @@ void score_crab_hit(game_ptr game);
  */
 void subscribe_score_events(game_ptr game);
 
-#endif  // GAME_SRC_SCORING_SCORE_H_
+#endif // GAME_SRC_SCORING_SCORE_H_

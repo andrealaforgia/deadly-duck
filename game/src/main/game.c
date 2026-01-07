@@ -9,15 +9,15 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "constants.h"
-#include "resource_manager.h"
-#include "entity_initializer.h"
-#include "score.h"
 #include "clock.h"
-#include "keyboard.h"
 #include "collision_system.h"
+#include "constants.h"
+#include "entity_initializer.h"
+#include "keyboard.h"
+#include "resource_manager.h"
+#include "score.h"
 
-bool game_init(game_t* game) {
+bool game_init(game_t *game) {
     // Seed random number generator
     srand((unsigned int)time(NULL));
 
@@ -35,10 +35,10 @@ bool game_init(game_t* game) {
     // Initialize game state
     game->running = true;
     game->current_screen = SCREEN_TRIBUTE;
-    game->current_stage = NULL;  // Will be set when stage system is implemented
-    game->scroll_y = LOGICAL_HEIGHT;  // Start from bottom of screen
+    game->current_stage = NULL;      // Will be set when stage system is implemented
+    game->scroll_y = LOGICAL_HEIGHT; // Start from bottom of screen
     game->tribute_start_time = get_clock_ticks_ms();
-    game->tribute_waiting = true;  // Wait for space key before scrolling
+    game->tribute_waiting = true; // Wait for space key before scrolling
 
     // Initialize all game entities
     initialize_all_entities(game);
@@ -58,13 +58,13 @@ bool game_init(game_t* game) {
     return true;
 }
 
-void game_terminate(game_t* game) {
+void game_terminate(game_t *game) {
     // Clean up collision system
     collision_system_cleanup();
-    
+
     // Clean up entity pools
     cleanup_all_entities(game);
-    
+
     // Free all game resources
     free_game_resources(game);
 }

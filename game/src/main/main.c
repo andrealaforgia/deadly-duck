@@ -1,11 +1,11 @@
-#include <stdbool.h>
-#include <stdio.h>
 #include "constants.h"
+#include "frame_limiter.h"
 #include "game.h"
 #include "stage_director.h"
-#include "frame_limiter.h"
+#include <stdbool.h>
+#include <stdio.h>
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     (void)argc;
     (void)argv;
 
@@ -17,8 +17,7 @@ int main(int argc, char* argv[]) {
     }
 
     printf("Deadly Duck - Press ESC to quit\n");
-    printf("Sprite sheet dimensions: %dx%d (%.2f:1 ratio)\n",
-           game.sprite_sheet.width, game.sprite_sheet.height,
+    printf("Sprite sheet dimensions: %dx%d (%.2f:1 ratio)\n", game.sprite_sheet.width, game.sprite_sheet.height,
            (float)game.sprite_sheet.width / game.sprite_sheet.height);
 
     // Initialize stage director
@@ -29,7 +28,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Initialize frame limiter
-    int target_fps = 1000 / FRAME_DELAY;  // Convert from frame delay to FPS
+    int target_fps = 1000 / FRAME_DELAY; // Convert from frame delay to FPS
     frame_limiter_t frame_limiter = create_frame_limiter(target_fps);
 
     // Game loop

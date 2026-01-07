@@ -9,23 +9,23 @@
 #ifndef GAME_MAIN_GAME_H_
 #define GAME_MAIN_GAME_H_
 
-#include <stdbool.h>
 #include "types.h"
+#include <stdbool.h>
 
-#include "graphics.h"
-#include "texture.h"
-#include "bitmap_font.h"
 #include "audio.h"
+#include "bitmap_font.h"
 #include "event_system.h"
+#include "graphics.h"
 #include "keyboard.h"
 #include "object_pool.h"
+#include "texture.h"
 
 // Entity modules
-#include "duck.h"
-#include "projectile.h"
-#include "crab.h"
 #include "brick.h"
+#include "crab.h"
+#include "duck.h"
 #include "jellyfish.h"
+#include "projectile.h"
 
 // Forward declarations for stage system
 typedef struct stage_t stage_t;
@@ -34,19 +34,14 @@ typedef struct stage_t stage_t;
  * Stage action returned by stage update functions
  */
 typedef enum {
-    PROGRESS,  // Continue with current stage
-    QUIT       // Quit the game
+    PROGRESS, // Continue with current stage
+    QUIT      // Quit the game
 } game_stage_action_t;
 
 /**
  * Game screen states (will be replaced by stage system)
  */
-typedef enum {
-    SCREEN_TRIBUTE,
-    SCREEN_COVER,
-    SCREEN_GAME,
-    SCREEN_GAME_OVER
-} game_screen_t;
+typedef enum { SCREEN_TRIBUTE, SCREEN_COVER, SCREEN_GAME, SCREEN_GAME_OVER } game_screen_t;
 
 // Sound effect indices for audio context
 #define SOUND_QUACK 0
@@ -76,22 +71,22 @@ typedef struct {
     // Game state
     bool running;
     game_screen_t current_screen;
-    stage_t* current_stage;  // Current active stage (for stage system)
+    stage_t *current_stage; // Current active stage (for stage system)
 
     // Tribute screen state
     float scroll_y;
     timestamp_ms_t tribute_start_time;
-    bool tribute_waiting;  // True if waiting for space key before scrolling
+    bool tribute_waiting; // True if waiting for space key before scrolling
 
     // Game over screen state
-    float game_over_y;  // Y position of GAME OVER text
+    float game_over_y; // Y position of GAME OVER text
 
     // Game entities
     duck_t duck;
-    
+
     // Object pools for efficient entity management
     object_pool_t popcorn_pool;
-    object_pool_t crab_pool; 
+    object_pool_t crab_pool;
     object_pool_t brick_pool;
     object_pool_t jellyfish_pool;
 
@@ -101,7 +96,7 @@ typedef struct {
 } game_t;
 
 // Pointer typedef for game
-typedef game_t* game_ptr;
+typedef game_t *game_ptr;
 
 /**
  * Initialize the game
@@ -110,7 +105,7 @@ typedef game_t* game_ptr;
  * @param game Pointer to game structure to initialize
  * @return true if initialization successful, false otherwise
  */
-bool game_init(game_t* game);
+bool game_init(game_t *game);
 
 /**
  * Clean up and terminate the game
@@ -118,6 +113,6 @@ bool game_init(game_t* game);
  *
  * @param game Pointer to game structure to terminate
  */
-void game_terminate(game_t* game);
+void game_terminate(game_t *game);
 
-#endif  // GAME_MAIN_GAME_H_
+#endif // GAME_MAIN_GAME_H_

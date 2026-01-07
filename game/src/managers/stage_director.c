@@ -5,11 +5,11 @@
 
 #include "stage_director.h"
 
+#include "game_over_stage.h"
+#include "playing_stage.h"
+#include "tribute_stage.h"
 #include <stdio.h>
 #include <string.h>
-#include "tribute_stage.h"
-#include "playing_stage.h"
-#include "game_over_stage.h"
 
 static stage_ptr find_stage_for_screen(stage_director_ptr director, game_screen_t screen_type) {
     for (size_t i = 0; i < director->stage_count; i++) {
@@ -18,6 +18,21 @@ static stage_ptr find_stage_for_screen(stage_director_ptr director, game_screen_
         }
     }
     return NULL;
+}
+
+static bool stage_director_register_stage(stage_director_ptr director, game_screen_t screen_type,
+                                          stage_ptr (*create_stage_fn)(void)) {
+    if (director->stage_count >= MAX_STAGES) {
+        printf("Cannot register more stages, maximum reached\n");
+        return false;
+    }
+
+    director->stages[director->stage_count].screen_type = screen_type;
+    director->stages[director->stage_count].create_stage_fn = create_stage_fn;
+    director->stages[director->stage_count].instance = NULL;
+    director->stage_count++;
+
+    return true;
 }
 
 static bool create_stage_instance(stage_director_ptr director, game_screen_t screen_type) {
@@ -33,7 +48,7 @@ static bool create_stage_instance(stage_director_ptr director, game_screen_t scr
 bool stage_director_init(stage_director_ptr director, game_ptr game) {
     // Initialize director state
     memset(director, 0, sizeof(stage_director_t));
-    
+
     // Register all available stages
     if (!stage_director_register_stage(director, SCREEN_TRIBUTE, create_tribute_stage_instance) ||
         !stage_director_register_stage(director, SCREEN_COVER, create_tribute_stage_instance) ||
@@ -63,22 +78,6 @@ bool stage_director_init(stage_director_ptr director, game_ptr game) {
 
     // Track previous screen for transitions
     director->previous_screen = game->current_screen;
-
-    return true;
-}
-
-bool stage_director_register_stage(stage_director_ptr director, 
-                                   game_screen_t screen_type,
-                                   stage_ptr (*create_stage_fn)(void)) {
-    if (director->stage_count >= MAX_STAGES) {
-        printf("Cannot register more stages, maximum reached\n");
-        return false;
-    }
-
-    director->stages[director->stage_count].screen_type = screen_type;
-    director->stages[director->stage_count].create_stage_fn = create_stage_fn;
-    director->stages[director->stage_count].instance = NULL;
-    director->stage_count++;
 
     return true;
 }

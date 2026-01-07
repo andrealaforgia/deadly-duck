@@ -4,15 +4,13 @@
  */
 
 #include "entity_factory.h"
-#include "constants.h"
 #include "clock.h"
+#include "constants.h"
 #include "object_pool.h"
 
 #include <stdlib.h>
 
-void create_duck(duck_ptr duck, float x, float y) {
-    duck_init(duck, x, y);
-}
+void create_duck(duck_ptr duck, float x, float y) { duck_init(duck, x, y); }
 
 bool create_crab(crab_ptr crab) {
     if (!crab) {
@@ -31,8 +29,7 @@ bool create_crab(crab_ptr crab) {
     crab->y = (float)(rand() % (top_60_percent - crab_height));
 
     // Random velocity between min and max speed
-    float speed = CRAB_MIN_SPEED +
-                  ((float)rand() / RAND_MAX) * CRAB_SPEED_RANGE;
+    float speed = CRAB_MIN_SPEED + ((float)rand() / RAND_MAX) * CRAB_SPEED_RANGE;
 
     // Random initial direction
     crab->moving_right = (rand() % 2) == 0;
@@ -49,8 +46,7 @@ bool create_crab(crab_ptr crab) {
     return true;
 }
 
-void create_jellyfish(jellyfish_ptr jellyfish, float x, float y,
-                      float group_velocity_x, bool moving_right,
+void create_jellyfish(jellyfish_ptr jellyfish, float x, float y, float group_velocity_x, bool moving_right,
                       int anim_offset) {
     if (!jellyfish) {
         return;
@@ -72,8 +68,7 @@ void create_entity_pools(game_ptr game) {
     game->popcorn_pool = create_object_pool(sizeof(popcorn_t), MAX_POPCORN);
     game->crab_pool = create_object_pool(sizeof(crab_t), NUM_CRABS);
     game->brick_pool = create_object_pool(sizeof(brick_t), MAX_BRICKS);
-    game->jellyfish_pool =
-        create_object_pool(sizeof(jellyfish_t), NUM_JELLYFISH);
+    game->jellyfish_pool = create_object_pool(sizeof(jellyfish_t), NUM_JELLYFISH);
 }
 
 void destroy_entity_pools(game_ptr game) {

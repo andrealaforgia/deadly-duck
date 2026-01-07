@@ -9,9 +9,9 @@
 #ifndef TEXTURE_LOADER_H
 #define TEXTURE_LOADER_H
 
-#include <stdbool.h>
 #include "game.h"
 #include "graphics_context.h"
+#include <stdbool.h>
 
 /**
  * @brief Load all texture resources for the game

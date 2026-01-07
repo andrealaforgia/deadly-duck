@@ -5,29 +5,31 @@
 
 #include "projectile.h"
 
-bool popcorn_spawn(object_pool_t* pool, float x, float y) {
+bool popcorn_spawn(object_pool_t *pool, float x, float y) {
     size_t index;
     popcorn_ptr popcorn = (popcorn_ptr)pool_acquire(pool, &index);
     if (!popcorn) {
-        return false;  // Pool is full
+        return false; // Pool is full
     }
 
     popcorn->active = true;
     popcorn->reflected = false;
     popcorn->x = x;
     popcorn->y = y;
-    popcorn->vy = -POPCORN_SPEED;  // Move upward
+    popcorn->vy = -POPCORN_SPEED; // Move upward
     return true;
 }
 
-void popcorn_update_all(object_pool_t* pool, int logical_height) {
+void popcorn_update_all(object_pool_t *pool, int logical_height) {
     // Manual iteration since we need to potentially release objects
     for (size_t i = 0; i < pool->capacity; i++) {
-        if (!pool_is_active(pool, i)) continue;
-        
+        if (!pool_is_active(pool, i))
+            continue;
+
         popcorn_ptr popcorn = (popcorn_ptr)pool_get_at(pool, i);
-        if (!popcorn || !popcorn->active) continue;
-        
+        if (!popcorn || !popcorn->active)
+            continue;
+
         // Move popcorn (can be upward or downward if reflected)
         popcorn->y += popcorn->vy;
 
@@ -40,6 +42,6 @@ void popcorn_update_all(object_pool_t* pool, int logical_height) {
 }
 
 void popcorn_reflect(popcorn_ptr projectile) {
-    projectile->vy = -projectile->vy;  // Reverse direction
+    projectile->vy = -projectile->vy; // Reverse direction
     projectile->reflected = true;
 }

@@ -5,11 +5,11 @@
 
 #include "resource_manager.h"
 
+#include "audio_loader.h"
 #include "constants.h"
+#include "font_loader.h"
 #include "graphics.h"
 #include "texture_loader.h"
-#include "audio_loader.h"
-#include "font_loader.h"
 
 bool load_game_resources(game_ptr game) {
     // Initialize graphics context using engine abstraction

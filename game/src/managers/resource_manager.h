@@ -9,8 +9,8 @@
 #ifndef RESOURCE_MANAGER_H
 #define RESOURCE_MANAGER_H
 
-#include <stdbool.h>
 #include "game.h"
+#include <stdbool.h>
 
 /**
  * @brief Load all game resources (graphics, audio, fonts)
