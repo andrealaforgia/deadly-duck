@@ -15,7 +15,9 @@
 #define MAX_SCORE 999999
 
 // Point values for different actions
-#define CRAB_HIT_SCORE 30
+#define CRAB_HIT_SCORE 30          // Points awarded for destroying a crab
+#define SURVIVAL_BONUS_SCORE 10    // Bonus points for surviving time periods
+#define LEVEL_COMPLETE_BONUS 100   // Bonus points for completing a level
 
 
 /**
