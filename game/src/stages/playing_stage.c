@@ -10,7 +10,7 @@
 
 #include "constants.h"
 #include "player_controller.h"
-#include "collision_detector.h"
+#include "collision_system.h"
 #include "game_renderer.h"
 #include "duck.h"
 #include "object_pool.h"
@@ -61,7 +61,7 @@ static game_stage_action_t playing_update(stage_ptr stage) {
     update_gameplay(state);
 
     // Process collisions
-    process_all_collisions(state->game);
+    collision_system_update(state->game);
 
     // Render the game
     render_game(state->game);
@@ -100,7 +100,7 @@ static void update_gameplay(playing_stage_state_ptr state) {
         duck_update(&game->duck);
         
         // Additional collision check with landed bricks after movement
-        if (check_duck_landed_brick_collision(game, game->duck.x)) {
+        if (collision_system_check_duck_landing(game, game->duck.x)) {
             // If collision detected, undo the movement
             game->duck.x -= game->duck.vx;
             game->duck.vx = 0;  // Stop duck movement

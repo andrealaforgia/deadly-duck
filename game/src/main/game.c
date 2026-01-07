@@ -15,7 +15,7 @@
 #include "score.h"
 #include "clock.h"
 #include "keyboard.h"
-#include "collision_system_init.h"
+#include "collision_system.h"
 
 bool game_init(game_t* game) {
     // Seed random number generator
@@ -43,8 +43,8 @@ bool game_init(game_t* game) {
     // Initialize all game entities
     initialize_all_entities(game);
 
-    // Initialize collision system with observers and event integration
-    if (!initialize_collision_system(game)) {
+    // Initialize simple collision system
+    if (!collision_system_init(game)) {
         return false;
     }
 
@@ -60,7 +60,7 @@ bool game_init(game_t* game) {
 
 void game_terminate(game_t* game) {
     // Clean up collision system
-    cleanup_collision_system();
+    collision_system_cleanup();
     
     // Clean up entity pools
     cleanup_all_entities(game);
