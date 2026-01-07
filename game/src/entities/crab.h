@@ -39,6 +39,10 @@ typedef crab_t* crab_ptr;
 #define NUM_CRABS 10    // Number of crabs on screen
 #define MAX_CRABS_WITH_BRICKS 6  // Maximum crabs carrying bricks at once
 
+// Movement constants
+#define CRAB_MIN_SPEED 1.5f     // Minimum crab movement speed
+#define CRAB_SPEED_RANGE 2.25f  // Additional speed range (max speed = min + range)
+
 // Animation timing
 #define DROP_ANIM_DURATION 100  // Dropping animation duration in ms
 

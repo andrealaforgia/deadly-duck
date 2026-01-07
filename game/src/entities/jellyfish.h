@@ -29,6 +29,10 @@ typedef jellyfish_t* jellyfish_ptr;
 #define JELLYFISH_WIDTH (16 * 2)  // Wider frame at 2x scale
 #define JELLYFISH_HEIGHT (13 * 2)  // Jellyfish sprite height at 2x scale
 
+// Movement constants
+#define JELLYFISH_MIN_SPEED 3.0f     // Minimum jellyfish movement speed  
+#define JELLYFISH_SPEED_RANGE 2.0f   // Additional speed range (max speed = min + range)
+
 // Animation constants
 #define JELLYFISH_FRAME_COUNT 4      // Number of animation frames
 #define ANIMATION_CYCLE_MS 250       // Time per animation frame in milliseconds

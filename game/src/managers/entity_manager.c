@@ -55,8 +55,8 @@ static void initialize_crabs(game_ptr game) {
         // Random y position in top 60% of screen
         crab->y = (float)(rand() % (top_60_percent - crab_height));
 
-        // Random velocity between 1.5 and 3.75 pixels per frame
-        float speed = 1.5f + ((float)rand() / RAND_MAX) * 2.25f;
+        // Random velocity between min and max speed
+        float speed = CRAB_MIN_SPEED + ((float)rand() / RAND_MAX) * CRAB_SPEED_RANGE;
 
         // Random initial direction
         crab->moving_right = (rand() % 2) == 0;
@@ -80,8 +80,8 @@ static void initialize_jellyfish(game_ptr game) {
     // Jellyfish sprite dimensions: ~16 width, ~13 height (at 2x scale = 32x26)
     const int jellyfish_spacing = 1;  // 1 pixel space between jellyfish
 
-    // Random fast velocity between 3.0 and 5.0 pixels per frame (same for all)
-    float speed = 3.0f + ((float)rand() / RAND_MAX) * 2.0f;
+    // Random fast velocity between min and max speed (same for all)
+    float speed = JELLYFISH_MIN_SPEED + ((float)rand() / RAND_MAX) * JELLYFISH_SPEED_RANGE;
     bool moving_right = (rand() % 2) == 0;  // Random initial direction
 
     // Calculate starting position to center all 4 jellyfish as a group
