@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "constants.h"
 #include "game.h"
-#include "stage_manager.h"
+#include "stage_director.h"
 #include "frame_limiter.h"
 
 int main(int argc, char* argv[]) {
@@ -21,9 +21,9 @@ int main(int argc, char* argv[]) {
            game.sprite_sheet.width, game.sprite_sheet.height,
            (float)game.sprite_sheet.width / game.sprite_sheet.height);
 
-    // Initialize stage manager
-    stage_manager_t stage_manager = {0};
-    if (!stage_manager_init(&stage_manager, &game)) {
+    // Initialize stage director
+    stage_director_t stage_director = {0};
+    if (!stage_director_init(&stage_director, &game)) {
         game_terminate(&game);
         return 1;
     }
@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     // Game loop
     while (game.running) {
         // Update stages and handle transitions
-        game_stage_action_t action = stage_manager_update(&stage_manager, &game);
+        game_stage_action_t action = stage_director_update(&stage_director, &game);
 
         if (action == QUIT) {
             game.running = false;
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Cleanup
-    stage_manager_cleanup(&stage_manager);
+    stage_director_cleanup(&stage_director);
     game_terminate(&game);
     return 0;
 }
