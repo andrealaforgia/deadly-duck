@@ -1,9 +1,9 @@
 /**
  * @file resource_manager.h
- * @brief Game resource loading and cleanup
+ * @brief Coordinated game resource loading and cleanup
  *
- * Handles loading and freeing of all game assets including textures,
- * fonts, and audio resources.
+ * Orchestrates loading and freeing of all game assets using focused
+ * resource loading modules for textures, fonts, and audio.
  */
 
 #ifndef RESOURCE_MANAGER_H
