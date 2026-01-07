@@ -11,7 +11,7 @@
 
 #include "constants.h"
 #include "resource_manager.h"
-#include "entity_manager.h"
+#include "entity_initializer.h"
 #include "score.h"
 #include "clock.h"
 #include "keyboard.h"
