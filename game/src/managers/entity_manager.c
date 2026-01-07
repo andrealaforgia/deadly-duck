@@ -45,9 +45,9 @@ static void initialize_crabs(game_ptr game) {
     const int crab_height = 15 * 2;
 
     for (int i = 0; i < NUM_CRABS; i++) {
-        size_t index;
-        crab_t* crab = (crab_t*)pool_acquire(&game->crab_pool, &index);
-        if (!crab) break;  // Pool full
+        size_t crab_index;
+        crab_ptr crab = (crab_ptr)pool_acquire(&game->crab_pool, &crab_index);
+        if (!crab) break;  // Pool is full
 
         // Random x position within screen bounds
         crab->x = (float)(rand() % (LOGICAL_WIDTH - crab_width));
@@ -90,9 +90,9 @@ static void initialize_jellyfish(game_ptr game) {
     float start_x = (LOGICAL_WIDTH - total_width) / 2.0f;
 
     for (int i = 0; i < NUM_JELLYFISH; i++) {
-        size_t index;
-        jellyfish_t* jellyfish = (jellyfish_t*)pool_acquire(&game->jellyfish_pool, &index);
-        if (!jellyfish) break;  // Pool full
+        size_t jellyfish_index;
+        jellyfish_ptr jellyfish = (jellyfish_ptr)pool_acquire(&game->jellyfish_pool, &jellyfish_index);
+        if (!jellyfish) break;  // Pool is full
 
         // Position horizontally: side by side, centered as a group
         jellyfish->x = start_x + (i * (16 * 2 + jellyfish_spacing));

@@ -41,20 +41,28 @@ static void kill_duck(game_ptr game) {
 }
 
 void check_popcorn_jellyfish_collisions(game_ptr game) {
-    for (int i = 0; i < MAX_POPCORN; i++) {
-        if (!game->popcorn[i].active || game->popcorn[i].reflected) continue;
+    for (size_t i = 0; i < game->popcorn_pool.capacity; i++) {
+        if (!pool_is_active(&game->popcorn_pool, i)) continue;
+        
+        popcorn_ptr popcorn = (popcorn_ptr)pool_get_at(&game->popcorn_pool, i);
+        if (!popcorn || !popcorn->active || popcorn->reflected) continue;
 
-        for (int j = 0; j < NUM_JELLYFISH; j++) {
+        for (size_t j = 0; j < game->jellyfish_pool.capacity; j++) {
+            if (!pool_is_active(&game->jellyfish_pool, j)) continue;
+            
+            jellyfish_ptr jellyfish = (jellyfish_ptr)pool_get_at(&game->jellyfish_pool, j);
+            if (!jellyfish) continue;
+            
             // AABB collision detection with jellyfish
             bool collision =
-                game->popcorn[i].x < game->jellyfish[j].x + (16 * 2) &&  // Jellyfish width
-                game->popcorn[i].x + POPCORN_WIDTH > game->jellyfish[j].x &&
-                game->popcorn[i].y < game->jellyfish[j].y + (13 * 2) &&  // Jellyfish height
-                game->popcorn[i].y + POPCORN_HEIGHT > game->jellyfish[j].y;
+                popcorn->x < jellyfish->x + (16 * 2) &&  // Jellyfish width
+                popcorn->x + POPCORN_WIDTH > jellyfish->x &&
+                popcorn->y < jellyfish->y + (13 * 2) &&  // Jellyfish height
+                popcorn->y + POPCORN_HEIGHT > jellyfish->y;
 
             if (collision) {
                 // Reflect popcorn downward
-                popcorn_reflect(&game->popcorn[i]);
+                popcorn_reflect(popcorn);
                 break;  // Popcorn can only be reflected once
             }
         }
@@ -62,31 +70,38 @@ void check_popcorn_jellyfish_collisions(game_ptr game) {
 }
 
 void check_popcorn_crab_collisions(game_ptr game) {
-    for (int i = 0; i < MAX_POPCORN; i++) {
-        if (!game->popcorn[i].active || game->popcorn[i].reflected) continue;
+    for (size_t i = 0; i < game->popcorn_pool.capacity; i++) {
+        if (!pool_is_active(&game->popcorn_pool, i)) continue;
+        
+        popcorn_ptr popcorn = (popcorn_ptr)pool_get_at(&game->popcorn_pool, i);
+        if (!popcorn || !popcorn->active || popcorn->reflected) continue;
 
-        for (int j = 0; j < NUM_CRABS; j++) {
-            if (!game->crabs[j].alive) continue;
+        for (size_t j = 0; j < game->crab_pool.capacity; j++) {
+            if (!pool_is_active(&game->crab_pool, j)) continue;
+            
+            crab_ptr crab = (crab_ptr)pool_get_at(&game->crab_pool, j);
+            if (!crab || !crab->alive) continue;
 
             // AABB collision detection
             bool collision =
-                game->popcorn[i].x < game->crabs[j].x + CRAB_WIDTH &&
-                game->popcorn[i].x + POPCORN_WIDTH > game->crabs[j].x &&
-                game->popcorn[i].y < game->crabs[j].y + CRAB_HEIGHT &&
-                game->popcorn[i].y + POPCORN_HEIGHT > game->crabs[j].y;
+                popcorn->x < crab->x + CRAB_WIDTH &&
+                popcorn->x + POPCORN_WIDTH > crab->x &&
+                popcorn->y < crab->y + CRAB_HEIGHT &&
+                popcorn->y + POPCORN_HEIGHT > crab->y;
 
             if (collision) {
                 // Mark crab as dead
-                game->crabs[j].alive = false;
+                crab->alive = false;
 
                 // Deactivate popcorn
-                game->popcorn[i].active = false;
+                popcorn->active = false;
+                pool_release(&game->popcorn_pool, i);
 
                 // Play crab hit sound
                 play_sound(&game->audio_context, SOUND_CRAB_HIT);
 
                 // Publish crab destroyed event (subscribers will award score)
-                crab_destroyed_data_t event_data = {game->crabs[j].x, game->crabs[j].y};
+                crab_destroyed_data_t event_data = {crab->x, crab->y};
                 game_event_t event = {
                     .type = GAME_EVENT_CRAB_DESTROYED,
                     .data = &event_data,
@@ -103,21 +118,25 @@ void check_popcorn_crab_collisions(game_ptr game) {
 void check_reflected_popcorn_duck_collisions(game_ptr game) {
     if (game->duck.dead) return;
 
-    for (int i = 0; i < MAX_POPCORN; i++) {
-        if (!game->popcorn[i].active || !game->popcorn[i].reflected) continue;
+    for (size_t i = 0; i < game->popcorn_pool.capacity; i++) {
+        if (!pool_is_active(&game->popcorn_pool, i)) continue;
+        
+        popcorn_ptr popcorn = (popcorn_ptr)pool_get_at(&game->popcorn_pool, i);
+        if (!popcorn || !popcorn->active || !popcorn->reflected) continue;
 
         // AABB collision detection with duck
         bool collision =
-            game->popcorn[i].x < game->duck.x + DUCK_WIDTH &&
-            game->popcorn[i].x + POPCORN_WIDTH > game->duck.x &&
-            game->popcorn[i].y < game->duck.y + DUCK_HEIGHT &&
-            game->popcorn[i].y + POPCORN_HEIGHT > game->duck.y;
+            popcorn->x < game->duck.x + DUCK_WIDTH &&
+            popcorn->x + POPCORN_WIDTH > game->duck.x &&
+            popcorn->y < game->duck.y + DUCK_HEIGHT &&
+            popcorn->y + POPCORN_HEIGHT > game->duck.y;
 
         if (collision) {
             kill_duck(game);
 
             // Deactivate popcorn
-            game->popcorn[i].active = false;
+            popcorn->active = false;
+            pool_release(&game->popcorn_pool, i);
 
             break;  // Only one popcorn can hit the duck
         }
@@ -127,21 +146,25 @@ void check_reflected_popcorn_duck_collisions(game_ptr game) {
 void check_brick_duck_collisions(game_ptr game) {
     if (game->duck.dead) return;
 
-    for (int i = 0; i < MAX_BRICKS; i++) {
-        if (!game->bricks[i].active || game->bricks[i].landed) continue;  // Only check falling bricks
+    for (size_t i = 0; i < game->brick_pool.capacity; i++) {
+        if (!pool_is_active(&game->brick_pool, i)) continue;
+        
+        brick_ptr brick = (brick_ptr)pool_get_at(&game->brick_pool, i);
+        if (!brick || !brick->active || brick->landed) continue;  // Only check falling bricks
 
         // AABB collision detection
         bool collision =
-            game->duck.x < game->bricks[i].x + BRICK_WIDTH &&
-            game->duck.x + DUCK_WIDTH > game->bricks[i].x &&
-            game->duck.y < game->bricks[i].y + BRICK_HEIGHT &&
-            game->duck.y + DUCK_HEIGHT > game->bricks[i].y;
+            game->duck.x < brick->x + BRICK_WIDTH &&
+            game->duck.x + DUCK_WIDTH > brick->x &&
+            game->duck.y < brick->y + BRICK_HEIGHT &&
+            game->duck.y + DUCK_HEIGHT > brick->y;
 
         if (collision) {
             kill_duck(game);
 
             // Deactivate the brick
-            game->bricks[i].active = false;
+            brick->active = false;
+            pool_release(&game->brick_pool, i);
 
             break;  // Only one brick can hit the duck
         }
@@ -149,18 +172,21 @@ void check_brick_duck_collisions(game_ptr game) {
 }
 
 bool check_duck_landed_brick_collision(game_ptr game, float new_duck_x) {
-    for (int i = 0; i < MAX_BRICKS; i++) {
-        if (game->bricks[i].landed) {
-            // Check if duck would collide with brick
-            bool collision =
-                new_duck_x < game->bricks[i].x + BRICK_WIDTH &&
-                new_duck_x + DUCK_WIDTH > game->bricks[i].x &&
-                game->duck.y < game->bricks[i].y + BRICK_HEIGHT &&
-                game->duck.y + DUCK_HEIGHT > game->bricks[i].y;
+    for (size_t i = 0; i < game->brick_pool.capacity; i++) {
+        if (!pool_is_active(&game->brick_pool, i)) continue;
+        
+        brick_ptr brick = (brick_ptr)pool_get_at(&game->brick_pool, i);
+        if (!brick || !brick->landed) continue;
+        
+        // Check if duck would collide with brick
+        bool collision =
+            new_duck_x < brick->x + BRICK_WIDTH &&
+            new_duck_x + DUCK_WIDTH > brick->x &&
+            game->duck.y < brick->y + BRICK_HEIGHT &&
+            game->duck.y + DUCK_HEIGHT > brick->y;
 
-            if (collision) {
-                return true;
-            }
+        if (collision) {
+            return true;
         }
     }
     return false;

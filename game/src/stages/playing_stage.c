@@ -13,10 +13,11 @@
 #include "collision_detector.h"
 #include "game_renderer.h"
 #include "duck.h"
+#include "object_pool.h"
 #include "projectile.h"
-#include "brick.h"
-#include "crab.h"
 #include "jellyfish.h"
+#include "crab.h"
+#include "brick.h"
 
 // Forward declarations for stage callbacks
 static void playing_init(stage_ptr stage, game_ptr game);
@@ -107,16 +108,16 @@ static void update_gameplay(playing_stage_state_ptr state) {
     }
 
     // Update projectiles
-    popcorn_update_all(game->popcorn, MAX_POPCORN, LOGICAL_HEIGHT);
+    popcorn_update_all(&game->popcorn_pool, LOGICAL_HEIGHT);
 
     // Update jellyfish
-    jellyfish_update_all(game->jellyfish, NUM_JELLYFISH, LOGICAL_WIDTH, current_time);
+    jellyfish_update_all(&game->jellyfish_pool, LOGICAL_WIDTH, current_time);
 
     // Update crabs
-    crabs_update_all(game->crabs, NUM_CRABS, game->bricks, MAX_BRICKS,
+    crabs_update_all(&game->crab_pool, &game->brick_pool,
                      LOGICAL_WIDTH, current_time, (void (*)(void*, int))play_sound, &game->audio_context);
 
     // Update bricks
-    bricks_update_all(game->bricks, MAX_BRICKS, LAKE_START_Y, current_time);
+    bricks_update_all(&game->brick_pool, LAKE_START_Y, current_time);
 }
 

@@ -7,51 +7,37 @@
 #include "clock.h"
 #include <stdlib.h>
 
-void crabs_init_all(crab_t* crabs, int count, int logical_width, float y_position) {
-    // Initialize crabs spaced evenly across the screen
-    int spacing = logical_width / (count + 1);
-
-    for (int i = 0; i < count; i++) {
-        crabs[i].x = spacing * (i + 1) - CRAB_WIDTH / 2;
-        crabs[i].y = y_position;
-        crabs[i].vx = (i % 2 == 0) ? 1.5f : -1.5f;  // Alternate directions
-        crabs[i].moving_right = (i % 2 == 0);
-        crabs[i].alive = true;
-        crabs[i].has_brick = false;
-        crabs[i].off_screen = false;
-        crabs[i].dropping = false;
-        crabs[i].drop_start_time = 0;
-        crabs[i].next_drop_time = get_clock_ticks_ms() + 3000 + (rand() % 5000);
-    }
-}
-
-void crabs_update_all(crab_t* crabs, int count, brick_t* bricks, int brick_count,
+void crabs_update_all(object_pool_t* crab_pool, object_pool_t* brick_pool,
                       int logical_width, timestamp_ms_t current_time,
                       void (*play_sound_callback)(void*, int), void* sound_context) {
-    for (int i = 0; i < count; i++) {
-        if (!crabs[i].alive) continue;  // Skip dead crabs
+    // Manual iteration since we need to access all crabs
+    for (size_t i = 0; i < crab_pool->capacity; i++) {
+        if (!pool_is_active(crab_pool, i)) continue;
+        
+        crab_ptr crab = (crab_ptr)pool_get_at(crab_pool, i);
+        if (!crab || !crab->alive) continue;
 
         // Update dropping animation
-        if (crabs[i].dropping) {
-            if (current_time - crabs[i].drop_start_time > DROP_ANIM_DURATION) {
-                crabs[i].dropping = false;
-                crabs[i].has_brick = false;
+        if (crab->dropping) {
+            if (current_time - crab->drop_start_time > DROP_ANIM_DURATION) {
+                crab->dropping = false;
+                crab->has_brick = false;
                 // Set next drop time (3-8 seconds from now)
-                crabs[i].next_drop_time = current_time + 3000 + (rand() % 5000);
+                crab->next_drop_time = current_time + 3000 + (rand() % 5000);
             }
         }
 
         // Check if it's time to drop brick AND crab is in central 80% of screen
         float drop_zone_start = logical_width * 0.1f;  // 10% from left
         float drop_zone_end = logical_width * 0.9f;    // 10% from right
-        bool in_drop_zone = crabs[i].x >= drop_zone_start &&
-                           crabs[i].x + CRAB_WIDTH <= drop_zone_end;
+        bool in_drop_zone = crab->x >= drop_zone_start &&
+                           crab->x + CRAB_WIDTH <= drop_zone_end;
 
-        if (crabs[i].has_brick && !crabs[i].dropping &&
-            current_time >= crabs[i].next_drop_time && in_drop_zone) {
+        if (crab->has_brick && !crab->dropping &&
+            current_time >= crab->next_drop_time && in_drop_zone) {
             // Start dropping animation
-            crabs[i].dropping = true;
-            crabs[i].drop_start_time = current_time;
+            crab->dropping = true;
+            crab->drop_start_time = current_time;
 
             // Play brick drop sound
             if (play_sound_callback && sound_context) {
@@ -59,43 +45,45 @@ void crabs_update_all(crab_t* crabs, int count, brick_t* bricks, int brick_count
             }
 
             // Spawn a falling brick
-            brick_spawn(bricks, brick_count,
-                       crabs[i].x + (CRAB_WIDTH / 2) - 6,  // Center under crab
-                       crabs[i].y + CRAB_HEIGHT);          // Below crab
+            brick_spawn(brick_pool,
+                       crab->x + (CRAB_WIDTH / 2) - 6,  // Center under crab
+                       crab->y + CRAB_HEIGHT);          // Below crab
         }
 
         // Move crab
-        crabs[i].x += crabs[i].vx;
+        crab->x += crab->vx;
 
         // Check if crab is fully off screen (for brick pickup)
-        if (crabs[i].x < -CRAB_WIDTH || crabs[i].x > logical_width) {
-            if (!crabs[i].off_screen) {
-                crabs[i].off_screen = true;
+        if (crab->x < -CRAB_WIDTH || crab->x > logical_width) {
+            if (!crab->off_screen) {
+                crab->off_screen = true;
                 // Crab gets brick when it goes off-screen (max 6 crabs with bricks)
-                if (!crabs[i].has_brick) {
+                if (!crab->has_brick) {
                     // Count how many crabs currently have bricks
                     int crabs_with_bricks = 0;
-                    for (int j = 0; j < count; j++) {
-                        if (crabs[j].has_brick) {
+                    for (size_t j = 0; j < crab_pool->capacity; j++) {
+                        if (!pool_is_active(crab_pool, j)) continue;
+                        crab_ptr other_crab = (crab_ptr)pool_get_at(crab_pool, j);
+                        if (other_crab && other_crab->has_brick) {
                             crabs_with_bricks++;
                         }
                     }
                     // Only give brick if less than max
                     if (crabs_with_bricks < MAX_CRABS_WITH_BRICKS) {
-                        crabs[i].has_brick = true;
+                        crab->has_brick = true;
                     }
                 }
             }
-        } else if (crabs[i].off_screen) {
+        } else if (crab->off_screen) {
             // Coming back on screen
-            crabs[i].off_screen = false;
+            crab->off_screen = false;
         }
 
         // Wrap around screen edges (seamless wrapping)
-        if (crabs[i].x < -CRAB_WIDTH) {
-            crabs[i].x = logical_width;
-        } else if (crabs[i].x > logical_width) {
-            crabs[i].x = -CRAB_WIDTH;
+        if (crab->x < -CRAB_WIDTH) {
+            crab->x = logical_width;
+        } else if (crab->x > logical_width) {
+            crab->x = -CRAB_WIDTH;
         }
     }
 }

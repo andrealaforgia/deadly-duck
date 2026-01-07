@@ -8,6 +8,7 @@
 
 #include <stdbool.h>
 #include "types.h"
+#include "object_pool.h"
 
 #include "brick.h"
 
@@ -42,28 +43,16 @@ typedef crab_t* crab_ptr;
 #define DROP_ANIM_DURATION 100  // Dropping animation duration in ms
 
 /**
- * Initialize all crabs with starting positions
+ * Update all crabs using object pool (movement, animations, brick dropping)
  *
- * @param crabs Array of crabs
- * @param count Number of crabs in array
- * @param logical_width Screen width for positioning
- * @param y_position Y position for all crabs
- */
-void crabs_init_all(crab_t* crabs, int count, int logical_width, float y_position);
-
-/**
- * Update all crabs (movement, animations, brick dropping)
- *
- * @param crabs Array of crabs
- * @param count Number of crabs in array
- * @param bricks Brick pool for spawning dropped bricks
- * @param brick_count Number of bricks in pool
+ * @param crab_pool Object pool for crabs
+ * @param brick_pool Object pool for spawning dropped bricks
  * @param logical_width Screen width for bounds checking
  * @param current_time Current game time
  * @param play_sound_callback Callback to play brick drop sound
  * @param sound_context Audio context for sound callback
  */
-void crabs_update_all(crab_t* crabs, int count, brick_t* bricks, int brick_count,
+void crabs_update_all(object_pool_t* crab_pool, object_pool_t* brick_pool,
                       int logical_width, timestamp_ms_t current_time,
                       void (*play_sound_callback)(void*, int), void* sound_context);
 

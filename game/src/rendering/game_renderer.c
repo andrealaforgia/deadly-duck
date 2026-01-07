@@ -73,10 +73,13 @@ void render_popcorn(game_ptr game) {
     const int popcorn_scale = 1;   // 1x scale
     rect_t src_rect = make_rect(SPRITE_POPCORN.x, SPRITE_POPCORN.y, SPRITE_POPCORN.w, SPRITE_POPCORN.h);
 
-    for (int i = 0; i < MAX_POPCORN; i++) {
-        if (game->popcorn[i].active) {
+    for (size_t i = 0; i < game->popcorn_pool.capacity; i++) {
+        if (!pool_is_active(&game->popcorn_pool, i)) continue;
+        
+        popcorn_ptr popcorn = (popcorn_ptr)pool_get_at(&game->popcorn_pool, i);
+        if (popcorn && popcorn->active) {
             render_sprite_scaled(&game->graphics_context, &game->sprite_sheet, &src_rect,
-                               (int)game->popcorn[i].x, (int)game->popcorn[i].y, popcorn_scale);
+                               (int)popcorn->x, (int)popcorn->y, popcorn_scale);
         }
     }
 }
@@ -86,14 +89,17 @@ void render_crabs(game_ptr game) {
 
     const int crab_scale = 2;    // 2x scale
 
-    for (int i = 0; i < NUM_CRABS; i++) {
-        if (!game->crabs[i].alive) continue;
+    for (size_t i = 0; i < game->crab_pool.capacity; i++) {
+        if (!pool_is_active(&game->crab_pool, i)) continue;
+        
+        crab_ptr crab = (crab_ptr)pool_get_at(&game->crab_pool, i);
+        if (!crab || !crab->alive) continue;
 
         const sprite_rect_t* sprite;
 
-        if (game->crabs[i].dropping) {
+        if (crab->dropping) {
             sprite = &SPRITE_CRAB_DROPPING;
-        } else if (game->crabs[i].has_brick) {
+        } else if (crab->has_brick) {
             sprite = &SPRITE_CRAB_WITH_BRICK;
         } else {
             sprite = &SPRITE_CRAB_NORMAL;
@@ -101,7 +107,7 @@ void render_crabs(game_ptr game) {
 
         rect_t src_rect = make_rect(sprite->x, sprite->y, sprite->w, sprite->h);
         render_sprite_scaled(&game->graphics_context, &game->sprite_sheet, &src_rect,
-                           (int)game->crabs[i].x, (int)game->crabs[i].y, crab_scale);
+                           (int)crab->x, (int)crab->y, crab_scale);
     }
 }
 
@@ -110,11 +116,16 @@ void render_jellyfish(game_ptr game) {
 
     const int jellyfish_scale = 2;  // 2x scale
 
-    for (int i = 0; i < NUM_JELLYFISH; i++) {
-        const sprite_rect_t* sprite = &SPRITE_JELLYFISH_FRAMES[game->jellyfish[i].anim_frame];
+    for (size_t i = 0; i < game->jellyfish_pool.capacity; i++) {
+        if (!pool_is_active(&game->jellyfish_pool, i)) continue;
+        
+        jellyfish_ptr jellyfish = (jellyfish_ptr)pool_get_at(&game->jellyfish_pool, i);
+        if (!jellyfish) continue;
+        
+        const sprite_rect_t* sprite = &SPRITE_JELLYFISH_FRAMES[jellyfish->anim_frame];
         rect_t src_rect = make_rect(sprite->x, sprite->y, sprite->w, sprite->h);
         render_sprite_scaled(&game->graphics_context, &game->sprite_sheet, &src_rect,
-                           (int)game->jellyfish[i].x, (int)game->jellyfish[i].y, jellyfish_scale);
+                           (int)jellyfish->x, (int)jellyfish->y, jellyfish_scale);
     }
 }
 
@@ -124,10 +135,13 @@ void render_bricks(game_ptr game) {
     const int brick_scale = 1;    // 1x scale
     rect_t src_rect = make_rect(SPRITE_BRICK.x, SPRITE_BRICK.y, SPRITE_BRICK.w, SPRITE_BRICK.h);
 
-    for (int i = 0; i < MAX_BRICKS; i++) {
-        if (game->bricks[i].active) {
+    for (size_t i = 0; i < game->brick_pool.capacity; i++) {
+        if (!pool_is_active(&game->brick_pool, i)) continue;
+        
+        brick_ptr brick = (brick_ptr)pool_get_at(&game->brick_pool, i);
+        if (brick && brick->active) {
             render_sprite_scaled(&game->graphics_context, &game->sprite_sheet, &src_rect,
-                               (int)game->bricks[i].x, (int)game->bricks[i].y, brick_scale);
+                               (int)brick->x, (int)brick->y, brick_scale);
         }
     }
 }

@@ -8,6 +8,7 @@
 
 #include <stdbool.h>
 #include "types.h"
+#include "object_pool.h"
 
 /**
  * Jellyfish enemy structure
@@ -32,24 +33,13 @@ typedef jellyfish_t* jellyfish_ptr;
 #define NUM_JELLYFISH 4  // Number of jellyfish on screen
 
 /**
- * Initialize all jellyfish with starting positions
- *
- * @param jellyfish Array of jellyfish
- * @param count Number of jellyfish in array
- * @param logical_width Screen width for positioning
- * @param y_position Y position for all jellyfish
- */
-void jellyfish_init_all(jellyfish_t* jellyfish, int count, int logical_width, float y_position);
-
-/**
- * Update all jellyfish (movement and animation)
+ * Update all jellyfish using object pool (movement and animation)
  * Note: All jellyfish move together and bounce together
  *
- * @param jellyfish Array of jellyfish
- * @param count Number of jellyfish in array
+ * @param pool Object pool for jellyfish
  * @param logical_width Screen width for bounds checking
  * @param current_time Current game time for animation
  */
-void jellyfish_update_all(jellyfish_t* jellyfish, int count, int logical_width, timestamp_ms_t current_time);
+void jellyfish_update_all(object_pool_t* pool, int logical_width, timestamp_ms_t current_time);
 
 #endif  // GAME_ENTITIES_JELLYFISH_H_

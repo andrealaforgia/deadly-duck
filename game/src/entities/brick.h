@@ -8,6 +8,7 @@
 
 #include <stdbool.h>
 #include "types.h"
+#include "object_pool.h"
 
 /**
  * Brick structure
@@ -33,32 +34,22 @@ typedef brick_t* brick_ptr;
 #define BRICK_LAND_DURATION 4000 // Bricks stay on lake for 4 seconds
 
 /**
- * Initialize brick pool (set all to inactive)
+ * Spawn a falling brick using object pool
  *
- * @param bricks Array of bricks
- * @param count Number of bricks in array
- */
-void bricks_pool_init(brick_t* bricks, int count);
-
-/**
- * Spawn a falling brick
- *
- * @param bricks Array of bricks
- * @param count Number of bricks in array
+ * @param pool Object pool for bricks
  * @param x Starting X position
  * @param y Starting Y position
  * @return true if spawned successfully, false if pool is full
  */
-bool brick_spawn(brick_t* bricks, int count, float x, float y);
+bool brick_spawn(object_pool_t* pool, float x, float y);
 
 /**
- * Update all bricks (falling and landed timeout)
+ * Update all bricks using object pool (falling and landed timeout)
  *
- * @param bricks Array of bricks
- * @param count Number of bricks in array
+ * @param pool Object pool for bricks
  * @param lake_start_y Y position of lake surface
  * @param current_time Current game time
  */
-void bricks_update_all(brick_t* bricks, int count, int lake_start_y, timestamp_ms_t current_time);
+void bricks_update_all(object_pool_t* pool, int lake_start_y, timestamp_ms_t current_time);
 
 #endif  // GAME_ENTITIES_BRICK_H_

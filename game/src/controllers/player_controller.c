@@ -57,7 +57,7 @@ bool player_process_input(game_ptr game) {
             const int duck_sprite_width = DUCK_WIDTH;
             float offset = game->duck.facing_right ? duck_sprite_width * 0.7f : duck_sprite_width * 0.3f;
 
-            popcorn_spawn(game->popcorn, MAX_POPCORN,
+            popcorn_spawn(&game->popcorn_pool,
                          game->duck.x + offset,
                          game->duck.y);
         }

@@ -6,47 +6,45 @@
 #include "brick.h"
 #include "types.h"
 
-void bricks_pool_init(brick_t* bricks, int count) {
-    for (int i = 0; i < count; i++) {
-        bricks[i].active = false;
-        bricks[i].landed = false;
-        bricks[i].x = 0.0f;
-        bricks[i].y = 0.0f;
-        bricks[i].land_time = 0;
+bool brick_spawn(object_pool_t* pool, float x, float y) {
+    size_t index;
+    brick_ptr brick = (brick_ptr)pool_acquire(pool, &index);
+    if (!brick) {
+        return false;  // Pool is full
     }
+
+    brick->active = true;
+    brick->landed = false;
+    brick->x = x;
+    brick->y = y;
+    brick->land_time = 0;
+    return true;
 }
 
-bool brick_spawn(brick_t* bricks, int count, float x, float y) {
-    for (int i = 0; i < count; i++) {
-        if (!bricks[i].active) {
-            bricks[i].active = true;
-            bricks[i].landed = false;
-            bricks[i].x = x;
-            bricks[i].y = y;
-            bricks[i].land_time = 0;
-            return true;
-        }
-    }
-    return false;  // Pool is full
-}
-
-void bricks_update_all(brick_t* bricks, int count, int lake_start_y, timestamp_ms_t current_time) {
-    for (int i = 0; i < count; i++) {
-        if (bricks[i].active && !bricks[i].landed) {
+void bricks_update_all(object_pool_t* pool, int lake_start_y, timestamp_ms_t current_time) {
+    // Manual iteration since we need to potentially release objects
+    for (size_t i = 0; i < pool->capacity; i++) {
+        if (!pool_is_active(pool, i)) continue;
+        
+        brick_ptr brick = (brick_ptr)pool_get_at(pool, i);
+        if (!brick || !brick->active) continue;
+        
+        if (!brick->landed) {
             // Fall downward
-            bricks[i].y += BRICK_FALL_SPEED;
+            brick->y += BRICK_FALL_SPEED;
 
             // Check if brick reaches lake surface
-            if (bricks[i].y + BRICK_HEIGHT >= lake_start_y) {
-                bricks[i].landed = true;
-                bricks[i].y = lake_start_y - BRICK_HEIGHT;  // Position on lake surface
-                bricks[i].land_time = current_time;
+            if (brick->y + BRICK_HEIGHT >= lake_start_y) {
+                brick->landed = true;
+                brick->y = lake_start_y - BRICK_HEIGHT;  // Position on lake surface
+                brick->land_time = current_time;
             }
-        } else if (bricks[i].landed) {
+        } else {
             // Check if timeout has passed
-            if (current_time - bricks[i].land_time >= BRICK_LAND_DURATION) {
-                bricks[i].active = false;
-                bricks[i].landed = false;
+            if (current_time - brick->land_time >= BRICK_LAND_DURATION) {
+                brick->active = false;
+                brick->landed = false;
+                pool_release(pool, i);
             }
         }
     }
