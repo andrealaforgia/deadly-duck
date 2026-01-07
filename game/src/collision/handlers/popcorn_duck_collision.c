@@ -11,10 +11,12 @@
 #include "sprite_atlas.h"
 #include "event_system.h"
 #include "game_events.h"
+#include "projectile.h"
+#include "duck.h"
 
-collision_result_t check_popcorn_duck_collision(entity_ptr popcorn_ptr, entity_ptr duck_ptr) {
-    popcorn_ptr popcorn = (popcorn_ptr)popcorn_ptr;
-    duck_ptr duck = (duck_ptr)duck_ptr;
+collision_result_t check_popcorn_duck_collision(entity_ptr a, entity_ptr b) {
+    popcorn_ptr popcorn = (popcorn_ptr)a;
+    duck_ptr duck = (duck_ptr)b;
     
     // Only check if duck is alive and popcorn is reflected
     if (!popcorn || !duck || !popcorn->active || !popcorn->reflected || duck->dead) {
@@ -39,13 +41,13 @@ collision_result_t check_popcorn_duck_collision(entity_ptr popcorn_ptr, entity_p
     return no_collision_result();
 }
 
-void respond_popcorn_duck_collision(game_ptr game, entity_ptr popcorn_ptr, entity_ptr duck_ptr, collision_result_t result) {
+void respond_popcorn_duck_collision(game_ptr game, entity_ptr a, entity_ptr b, collision_result_t result) {
     if (!result.collision_detected) {
         return;
     }
     
-    popcorn_ptr popcorn = (popcorn_ptr)popcorn_ptr;
-    (void)duck_ptr; // Duck handling is done through game state
+    popcorn_ptr popcorn = (popcorn_ptr)a;
+    (void)b; // Duck handling is done through game state
     
     // Kill duck (this function handles death logic, sound, events)
     // We'll need to add a kill_duck declaration or access it differently

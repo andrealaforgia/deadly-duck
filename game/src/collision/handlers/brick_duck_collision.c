@@ -11,10 +11,12 @@
 #include "sprite_atlas.h"
 #include "event_system.h"
 #include "game_events.h"
+#include "brick.h"
+#include "duck.h"
 
-collision_result_t check_brick_duck_collision(entity_ptr brick_ptr, entity_ptr duck_ptr) {
-    brick_ptr brick = (brick_ptr)brick_ptr;
-    duck_ptr duck = (duck_ptr)duck_ptr;
+collision_result_t check_brick_duck_collision(entity_ptr a, entity_ptr b) {
+    brick_ptr brick = (brick_ptr)a;
+    duck_ptr duck = (duck_ptr)b;
     
     // Only check falling bricks against living duck
     if (!brick || !duck || !brick->active || brick->landed || duck->dead) {
@@ -39,13 +41,13 @@ collision_result_t check_brick_duck_collision(entity_ptr brick_ptr, entity_ptr d
     return no_collision_result();
 }
 
-void respond_brick_duck_collision(game_ptr game, entity_ptr brick_ptr, entity_ptr duck_ptr, collision_result_t result) {
+void respond_brick_duck_collision(game_ptr game, entity_ptr a, entity_ptr b, collision_result_t result) {
     if (!result.collision_detected) {
         return;
     }
     
-    brick_ptr brick = (brick_ptr)brick_ptr;
-    (void)duck_ptr; // Duck handling is done through game state
+    brick_ptr brick = (brick_ptr)a;
+    (void)b; // Duck handling is done through game state
     
     // Kill duck (implement duck death logic)
     int current_time = get_clock_ticks_ms();

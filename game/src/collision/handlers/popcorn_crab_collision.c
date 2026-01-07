@@ -9,10 +9,12 @@
 #include "audio.h"
 #include "event_system.h"
 #include "game_events.h"
+#include "projectile.h"
+#include "crab.h"
 
-collision_result_t check_popcorn_crab_collision(entity_ptr popcorn_ptr, entity_ptr crab_ptr) {
-    popcorn_ptr popcorn = (popcorn_ptr)popcorn_ptr;
-    crab_ptr crab = (crab_ptr)crab_ptr;
+collision_result_t check_popcorn_crab_collision(entity_ptr a, entity_ptr b) {
+    popcorn_ptr popcorn = (popcorn_ptr)a;
+    crab_ptr crab = (crab_ptr)b;
     
     if (!popcorn || !crab || !popcorn->active || popcorn->reflected || !crab->alive) {
         return no_collision_result();
@@ -36,13 +38,13 @@ collision_result_t check_popcorn_crab_collision(entity_ptr popcorn_ptr, entity_p
     return no_collision_result();
 }
 
-void respond_popcorn_crab_collision(game_ptr game, entity_ptr popcorn_ptr, entity_ptr crab_ptr, collision_result_t result) {
+void respond_popcorn_crab_collision(game_ptr game, entity_ptr a, entity_ptr b, collision_result_t result) {
     if (!result.collision_detected) {
         return;
     }
     
-    popcorn_ptr popcorn = (popcorn_ptr)popcorn_ptr;
-    crab_ptr crab = (crab_ptr)crab_ptr;
+    popcorn_ptr popcorn = (popcorn_ptr)a;
+    crab_ptr crab = (crab_ptr)b;
     
     // Mark crab as dead
     crab->alive = false;

@@ -6,10 +6,12 @@
 #include "duck_landed_brick_collision.h"
 #include "collision.h"
 #include "constants.h"
+#include "brick.h"
+#include "geometry.h"
 
-collision_result_t check_duck_landed_brick_collision(entity_ptr duck_pos_ptr, entity_ptr brick_ptr) {
-    duck_position_t* duck_pos = (duck_position_t*)duck_pos_ptr;
-    brick_ptr brick = (brick_ptr)brick_ptr;
+collision_result_t check_duck_position_brick_collision(entity_ptr a, entity_ptr b) {
+    point_ptr duck_pos = (point_ptr)a;
+    brick_ptr brick = (brick_ptr)b;
     
     // Only check landed bricks
     if (!duck_pos || !brick || !brick->landed) {
@@ -35,7 +37,7 @@ collision_result_t check_duck_landed_brick_collision(entity_ptr duck_pos_ptr, en
     return no_collision_result();
 }
 
-void respond_duck_landed_brick_collision(game_ptr game, entity_ptr duck_position, entity_ptr brick, collision_result_t result) {
+void respond_duck_position_brick_collision(game_ptr game, entity_ptr duck_position, entity_ptr brick, collision_result_t result) {
     // No response needed - this collision is used purely for movement blocking
     // The calling code will handle preventing the movement based on collision result
     (void)game;
@@ -44,10 +46,10 @@ void respond_duck_landed_brick_collision(game_ptr game, entity_ptr duck_position
     (void)result;
 }
 
-collision_strategy_t get_duck_landed_brick_strategy(void) {
+collision_strategy_t get_duck_position_brick_strategy(void) {
     collision_strategy_t strategy = {
-        .check = check_duck_landed_brick_collision,
-        .respond = respond_duck_landed_brick_collision,
+        .check = check_duck_position_brick_collision,
+        .respond = respond_duck_position_brick_collision,
         .name = "Duck-Landed Brick Movement Blocking"
     };
     return strategy;

@@ -4,183 +4,155 @@
  */
 
 #include "collision_detector.h"
-#include "audio.h"
+#include "collision_strategy_factory.h"
+#include "collision_interface.h"
+#include "collision_template.h"
+#include "collision_processors.h"
 #include "projectile.h"
 #include "brick.h"
 #include "crab.h"
 #include "duck.h"
 #include "jellyfish.h"
-#include "sprite_atlas.h"
-#include "constants.h"
-#include "score.h"
-#include "clock.h"
-#include "event_system.h"
-#include "game_events.h"
 #include "collision.h"
+#include "geometry.h"
 
-static void kill_duck(game_ptr game) {
-    int current_time = get_clock_ticks_ms();
-    game->duck.dead = true;
-    game->duck.death_time = current_time;
-    game->lives--;
-
-    // Position dead duck to touch lake surface
-    const int dead_duck_height = SPRITE_DUCK_DEAD.h * 2;  // Sprite height scaled 2x
-    game->duck.y = LAKE_START_Y - dead_duck_height;
-
-    // Play duck death sound
-    play_sound(&game->audio_context, SOUND_DUCK_DEATH);
-
-    // Publish duck died event
-    duck_died_data_t event_data = {game->duck.x, game->duck.y};
-    game_event_t event = {
-        .type = GAME_EVENT_DUCK_DIED,
-        .data = &event_data,
-        .data_size = sizeof(event_data)
-    };
-    publish(&game->event_system, &event);
-}
-
-static void check_popcorn_jellyfish_collisions(game_ptr game) {
-    for (size_t i = 0; i < game->popcorn_pool.capacity; i++) {
-        if (!pool_is_active(&game->popcorn_pool, i)) continue;
+/**
+ * @brief Enhanced collision processing using Template Method pattern
+ * @param game Game state
+ * @param entity_a_type First entity type
+ * @param entity_b_type Second entity type 
+ * @param pool_a First entity pool
+ * @param pool_b Second entity pool
+ */
+static void process_entity_collisions_template(game_ptr game, entity_type_t entity_a_type, entity_type_t entity_b_type,
+                                              object_pool_t* pool_a, object_pool_t* pool_b) {
+    collision_registry_t* registry = get_collision_registry();
+    if (!registry) return;
+    
+    collision_strategy_t* strategy = collision_registry_lookup(registry, entity_a_type, entity_b_type);
+    if (!strategy) return;
+    
+    // Create pool-managed processor with Template Method pattern
+    pool_collision_processor_t* processor = create_pool_processor(strategy, pool_a, pool_b, strategy->name);
+    if (!processor) return;
+    
+    // Check all combinations of active entities using Template Method
+    for (size_t i = 0; i < pool_a->capacity; i++) {
+        if (!pool_is_active(pool_a, i)) continue;
         
-        popcorn_ptr popcorn = (popcorn_ptr)pool_get_at(&game->popcorn_pool, i);
-        if (!popcorn || !popcorn->active || popcorn->reflected) continue;
-
-        for (size_t j = 0; j < game->jellyfish_pool.capacity; j++) {
-            if (!pool_is_active(&game->jellyfish_pool, j)) continue;
+        entity_ptr entity_a = pool_get_at(pool_a, i);
+        if (!entity_a) continue;
+        
+        for (size_t j = 0; j < pool_b->capacity; j++) {
+            if (!pool_is_active(pool_b, j)) continue;
             
-            jellyfish_ptr jellyfish = (jellyfish_ptr)pool_get_at(&game->jellyfish_pool, j);
-            if (!jellyfish) continue;
+            entity_ptr entity_b = pool_get_at(pool_b, j);
+            if (!entity_b) continue;
             
-            // AABB collision detection with jellyfish
-            bool collision = aabb_collision(popcorn->x, popcorn->y, POPCORN_WIDTH, POPCORN_HEIGHT,
-                                          jellyfish->x, jellyfish->y, JELLYFISH_WIDTH, JELLYFISH_HEIGHT);
-
-            if (collision) {
-                // Reflect popcorn downward
-                popcorn_reflect(popcorn);
-                break;  // Popcorn can only be reflected once
-            }
-        }
-    }
-}
-
-static void check_popcorn_crab_collisions(game_ptr game) {
-    for (size_t i = 0; i < game->popcorn_pool.capacity; i++) {
-        if (!pool_is_active(&game->popcorn_pool, i)) continue;
-        
-        popcorn_ptr popcorn = (popcorn_ptr)pool_get_at(&game->popcorn_pool, i);
-        if (!popcorn || !popcorn->active || popcorn->reflected) continue;
-
-        for (size_t j = 0; j < game->crab_pool.capacity; j++) {
-            if (!pool_is_active(&game->crab_pool, j)) continue;
+            // Set pool indices for proper cleanup
+            processor->index_a = i;
+            processor->index_b = j;
             
-            crab_ptr crab = (crab_ptr)pool_get_at(&game->crab_pool, j);
-            if (!crab || !crab->alive) continue;
-
-            // AABB collision detection
-            bool collision = aabb_collision(popcorn->x, popcorn->y, POPCORN_WIDTH, POPCORN_HEIGHT,
-                                          crab->x, crab->y, CRAB_WIDTH, CRAB_HEIGHT);
-
-            if (collision) {
-                // Mark crab as dead
-                crab->alive = false;
-
-                // Deactivate popcorn
-                popcorn->active = false;
-                pool_release(&game->popcorn_pool, i);
-
-                // Play crab hit sound
-                play_sound(&game->audio_context, SOUND_CRAB_HIT);
-
-                // Publish crab destroyed event (subscribers will award score)
-                crab_destroyed_data_t event_data = {crab->x, crab->y};
-                game_event_t event = {
-                    .type = GAME_EVENT_CRAB_DESTROYED,
-                    .data = &event_data,
-                    .data_size = sizeof(event_data)
-                };
-                publish(&game->event_system, &event);
-
-                break;  // Popcorn can only hit one crab
-            }
+            // Use Template Method pattern for collision processing
+            processor->base.process_collision(&processor->base, game, entity_a, entity_b);
         }
     }
+    
+    destroy_collision_processor(&processor->base);
 }
 
-static void check_reflected_popcorn_duck_collisions(game_ptr game) {
-    if (game->duck.dead) return;
-
-    for (size_t i = 0; i < game->popcorn_pool.capacity; i++) {
-        if (!pool_is_active(&game->popcorn_pool, i)) continue;
-        
-        popcorn_ptr popcorn = (popcorn_ptr)pool_get_at(&game->popcorn_pool, i);
-        if (!popcorn || !popcorn->active || !popcorn->reflected) continue;
-
-        // AABB collision detection with duck
-        bool collision = aabb_collision(popcorn->x, popcorn->y, POPCORN_WIDTH, POPCORN_HEIGHT,
-                                      game->duck.x, game->duck.y, DUCK_WIDTH, DUCK_HEIGHT);
-
-        if (collision) {
-            kill_duck(game);
-
-            // Deactivate popcorn
-            popcorn->active = false;
-            pool_release(&game->popcorn_pool, i);
-
-            break;  // Only one popcorn can hit the duck
-        }
-    }
+/**
+ * @brief Legacy collision processing (for compatibility)
+ */
+static void process_entity_collisions(game_ptr game, entity_type_t entity_a_type, entity_type_t entity_b_type,
+                                     object_pool_t* pool_a, object_pool_t* pool_b) {
+    // Use enhanced template method by default
+    process_entity_collisions_template(game, entity_a_type, entity_b_type, pool_a, pool_b);
 }
 
-static void check_brick_duck_collisions(game_ptr game) {
-    if (game->duck.dead) return;
-
-    for (size_t i = 0; i < game->brick_pool.capacity; i++) {
-        if (!pool_is_active(&game->brick_pool, i)) continue;
-        
-        brick_ptr brick = (brick_ptr)pool_get_at(&game->brick_pool, i);
-        if (!brick || !brick->active || brick->landed) continue;  // Only check falling bricks
-
-        // AABB collision detection
-        bool collision = aabb_collision(game->duck.x, game->duck.y, DUCK_WIDTH, DUCK_HEIGHT,
-                                      brick->x, brick->y, BRICK_WIDTH, BRICK_HEIGHT);
-
-        if (collision) {
-            kill_duck(game);
-
-            // Deactivate the brick
-            brick->active = false;
-            pool_release(&game->brick_pool, i);
-
-            break;  // Only one brick can hit the duck
-        }
-    }
-}
 
 bool check_duck_landed_brick_collision(game_ptr game, float new_duck_x) {
+    collision_registry_t* registry = get_collision_registry();
+    if (!registry) return false;
+    
+    collision_strategy_t* strategy = collision_registry_lookup(registry, ENTITY_TYPE_DUCK_POSITION, ENTITY_TYPE_LANDED_BRICK);
+    if (!strategy) return false;
+    
+    // Create duck position for collision check
+    point_t duck_pos = {new_duck_x, game->duck.y};
+    
+    // Check collision against all landed bricks
     for (size_t i = 0; i < game->brick_pool.capacity; i++) {
         if (!pool_is_active(&game->brick_pool, i)) continue;
         
         brick_ptr brick = (brick_ptr)pool_get_at(&game->brick_pool, i);
-        if (!brick || !brick->landed) continue;
+        if (!brick) continue;
         
-        // Check if duck would collide with brick
-        bool collision = aabb_collision(new_duck_x, game->duck.y, DUCK_WIDTH, DUCK_HEIGHT,
-                                      brick->x, brick->y, BRICK_WIDTH, BRICK_HEIGHT);
-
-        if (collision) {
+        collision_result_t result = strategy->check((entity_ptr)&duck_pos, (entity_ptr)brick);
+        if (result.collision_detected) {
             return true;
         }
     }
     return false;
 }
 
+/**
+ * @brief Enhanced duck collision processing using Template Method pattern
+ * @param game Game state
+ * @param entity_type Type of entities in the pool
+ * @param pool Entity pool to check against duck
+ */
+static void process_duck_collisions_template(game_ptr game, entity_type_t entity_type, object_pool_t* pool) {
+    if (game->duck.dead) return;
+    
+    collision_registry_t* registry = get_collision_registry();
+    if (!registry) return;
+    
+    collision_strategy_t* strategy = collision_registry_lookup(registry, entity_type, ENTITY_TYPE_DUCK);
+    if (!strategy) return;
+    
+    // Create filtered processor that checks for living duck
+    filtered_collision_processor_t* processor = create_filtered_processor(strategy, living_duck_filter, strategy->name);
+    if (!processor) return;
+    
+    // Check all active entities in pool against duck using Template Method
+    for (size_t i = 0; i < pool->capacity; i++) {
+        if (!pool_is_active(pool, i)) continue;
+        
+        entity_ptr entity = pool_get_at(pool, i);
+        if (!entity) continue;
+        
+        // Use Template Method pattern for duck collision processing
+        if (processor->base.process_collision(&processor->base, game, entity, (entity_ptr)&game->duck)) {
+            // Handle pool cleanup if entity was destroyed
+            collision_result_t result = strategy->check(entity, (entity_ptr)&game->duck);
+            if (result.entity_a_destroyed) {
+                pool_release(pool, i);
+            }
+            // Note: Duck destruction is handled by the strategy response
+        }
+    }
+    
+    destroy_collision_processor(&processor->base);
+}
+
+/**
+ * @brief Legacy duck collision processing (for compatibility)
+ */
+static void process_duck_collisions(game_ptr game, entity_type_t entity_type, object_pool_t* pool) {
+    // Use enhanced template method by default
+    process_duck_collisions_template(game, entity_type, pool);
+}
+
 void process_all_collisions(game_ptr game) {
-    check_popcorn_jellyfish_collisions(game);
-    check_popcorn_crab_collisions(game);
-    check_reflected_popcorn_duck_collisions(game);
-    check_brick_duck_collisions(game);
+    // Process all entity-to-entity collisions using strategy pattern
+    process_entity_collisions(game, ENTITY_TYPE_POPCORN, ENTITY_TYPE_JELLYFISH, 
+                             &game->popcorn_pool, &game->jellyfish_pool);
+    
+    process_entity_collisions(game, ENTITY_TYPE_POPCORN, ENTITY_TYPE_CRAB,
+                             &game->popcorn_pool, &game->crab_pool);
+    
+    // Process collisions with single duck entity
+    process_duck_collisions(game, ENTITY_TYPE_POPCORN, &game->popcorn_pool);
+    process_duck_collisions(game, ENTITY_TYPE_BRICK, &game->brick_pool);
 }

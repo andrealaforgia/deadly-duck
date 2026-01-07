@@ -6,10 +6,12 @@
 #include "popcorn_jellyfish_collision.h"
 #include "collision.h"
 #include "constants.h"
+#include "projectile.h"
+#include "jellyfish.h"
 
-collision_result_t check_popcorn_jellyfish_collision(entity_ptr popcorn_ptr, entity_ptr jellyfish_ptr) {
-    popcorn_ptr popcorn = (popcorn_ptr)popcorn_ptr;
-    jellyfish_ptr jellyfish = (jellyfish_ptr)jellyfish_ptr;
+collision_result_t check_popcorn_jellyfish_collision(entity_ptr a, entity_ptr b) {
+    popcorn_ptr popcorn = (popcorn_ptr)a;
+    jellyfish_ptr jellyfish = (jellyfish_ptr)b;
     
     if (!popcorn || !jellyfish || !popcorn->active || popcorn->reflected) {
         return no_collision_result();
@@ -33,15 +35,15 @@ collision_result_t check_popcorn_jellyfish_collision(entity_ptr popcorn_ptr, ent
     return no_collision_result();
 }
 
-void respond_popcorn_jellyfish_collision(game_ptr game, entity_ptr popcorn_ptr, entity_ptr jellyfish_ptr, collision_result_t result) {
+void respond_popcorn_jellyfish_collision(game_ptr game, entity_ptr a, entity_ptr b, collision_result_t result) {
     (void)game;       // Not used in this collision response
-    (void)jellyfish_ptr; // Jellyfish remains unaffected
+    (void)b; // Jellyfish remains unaffected
     
     if (!result.collision_detected) {
         return;
     }
     
-    popcorn_ptr popcorn = (popcorn_ptr)popcorn_ptr;
+    popcorn_ptr popcorn = (popcorn_ptr)a;
     
     // Reflect popcorn downward
     popcorn_reflect(popcorn);
