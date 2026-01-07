@@ -78,7 +78,7 @@ run: $(TARGET)
 	./$(TARGET)
 
 lint:
-	@echo "Running cppcheck linter..."
+	@echo "Running cppcheck linter on game code..."
 	cppcheck --enable=all --std=c99 --platform=unix64 --suppress=missingIncludeSystem \
 		--suppress=unusedFunction --suppress=unmatchedSuppression \
 		-I$(ENGINE_GRAPHICS_DIR) -I$(ENGINE_MATH_DIR) -I$(ENGINE_INPUT_DIR) \
@@ -88,4 +88,4 @@ lint:
 		-I$(GAME_CONTROLLERS_DIR) -I$(GAME_COLLISION_DIR) -I$(GAME_RENDERING_DIR) \
 		-I$(GAME_MANAGERS_DIR) -I$(GAME_SCORING_DIR) -I$(GAME_EVENTS_DIR) \
 		$(SRC) 2>&1 | grep -v "Cppcheck cannot find all the include files" || true
-	@echo "Linting complete."
+	@echo "Game code linting complete."
