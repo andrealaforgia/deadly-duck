@@ -22,7 +22,7 @@ static void initialize_jellyfish(game_ptr game);
 
 void initialize_all_entities(game_ptr game) {
     // Initialize duck in the center, right on top of the lake
-    const int duck_height = SPRITE_DUCK_NORMAL.h * 2;  // Duck sprite height * 2x scale
+    const int duck_height = DUCK_HEIGHT;
     duck_init(&game->duck, LOGICAL_WIDTH / 2.0f, LAKE_START_Y - duck_height);
 
     // Initialize object pools
@@ -41,8 +41,8 @@ void initialize_all_entities(game_ptr game) {
 static void initialize_crabs(game_ptr game) {
     // Initialize crabs in random positions in top 60% of screen
     const int top_60_percent = (int)(LOGICAL_HEIGHT * 0.6f);
-    const int crab_width = 17 * 2;
-    const int crab_height = 15 * 2;
+    const int crab_width = CRAB_WIDTH;
+    const int crab_height = CRAB_HEIGHT;
 
     for (int i = 0; i < NUM_CRABS; i++) {
         size_t crab_index;
@@ -86,7 +86,7 @@ static void initialize_jellyfish(game_ptr game) {
 
     // Calculate starting position to center all 4 jellyfish as a group
     // Total width = 4 jellyfish + 3 gaps
-    float total_width = (16 * 2 * 4) + (jellyfish_spacing * 3);
+    float total_width = (JELLYFISH_WIDTH * NUM_JELLYFISH) + (jellyfish_spacing * 3);
     float start_x = (LOGICAL_WIDTH - total_width) / 2.0f;
 
     for (int i = 0; i < NUM_JELLYFISH; i++) {
@@ -95,7 +95,7 @@ static void initialize_jellyfish(game_ptr game) {
         if (!jellyfish) break;  // Pool is full
 
         // Position horizontally: side by side, centered as a group
-        jellyfish->x = start_x + (i * (16 * 2 + jellyfish_spacing));
+        jellyfish->x = start_x + (i * (JELLYFISH_WIDTH + jellyfish_spacing));
         jellyfish->y = jellyfish_zone_y;
 
         // All jellyfish move in the same direction at the same speed
