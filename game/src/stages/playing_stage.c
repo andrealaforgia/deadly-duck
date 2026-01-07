@@ -93,28 +93,17 @@ static void update_gameplay(playing_stage_state_ptr state) {
         }
     }
 
-    // Update duck position (only if alive)
+    // Update duck state (only if alive)
     if (!game->duck.dead) {
-        float new_duck_x = game->duck.x + game->duck.vx;
-
-        // Check collision with landed bricks
-        if (!check_duck_landed_brick_collision(game, new_duck_x)) {
-            game->duck.x = new_duck_x;
-        } else {
+        // Let duck_update handle movement and basic boundary checking
+        duck_update(&game->duck);
+        
+        // Additional collision check with landed bricks after movement
+        if (check_duck_landed_brick_collision(game, game->duck.x)) {
+            // If collision detected, undo the movement
+            game->duck.x -= game->duck.vx;
             game->duck.vx = 0;  // Stop duck movement
         }
-
-        // Keep duck within screen bounds
-        if (game->duck.x < 0) {
-            game->duck.x = 0;
-            game->duck.vx = 0;
-        } else if (game->duck.x + DUCK_WIDTH > LOGICAL_WIDTH) {
-            game->duck.x = LOGICAL_WIDTH - DUCK_WIDTH;
-            game->duck.vx = 0;
-        }
-
-        // Update duck state
-        duck_update(&game->duck);
     }
 
     // Update projectiles

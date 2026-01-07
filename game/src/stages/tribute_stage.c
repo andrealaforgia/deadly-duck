@@ -149,7 +149,7 @@ static void render_tribute(tribute_stage_state_ptr state) {
     int scale = target_width / unscaled_width;
     if (scale < 1) scale = 1;  // Minimum scale of 1
 
-    int line_height = 7 * scale + 5;  // Character height * scale + spacing
+    int line_height = game->font.char_height * scale + 5;  // Character height * scale + spacing
 
     // Render each line centered
     int current_y = (int)state->scroll_y;
@@ -160,27 +160,27 @@ static void render_tribute(tribute_stage_state_ptr state) {
             const char* name_text = "ED HODAPP";
 
             // Calculate widths
-            int to_width = get_bitmap_text_width(&game->font, to_text);
-            int name_width = get_bitmap_text_width(&game->font, name_text);
+            int to_width = get_bitmap_text_width_scaled(&game->font, to_text, scale);
+            int name_width = get_bitmap_text_width_scaled(&game->font, name_text, scale);
             int total_width = to_width + name_width;
 
             // Center the whole line
             int line_x = (LOGICAL_WIDTH - total_width) / 2;
 
             // Render "TO " in yellow
-            render_bitmap_text(&game->font, &game->graphics_context, to_text,
-                               line_x, current_y, FONT_COLOR_YELLOW);
+            render_bitmap_text_scaled(&game->font, &game->graphics_context, to_text,
+                                      line_x, current_y, FONT_COLOR_YELLOW, scale);
 
             // Render "ED HODAPP" in pink
-            render_bitmap_text(&game->font, &game->graphics_context, name_text,
-                               line_x + to_width, current_y, FONT_COLOR_PINK);
+            render_bitmap_text_scaled(&game->font, &game->graphics_context, name_text,
+                                      line_x + to_width, current_y, FONT_COLOR_PINK, scale);
         } else {
             // All other lines in yellow
-            int text_width = get_bitmap_text_width(&game->font, TRIBUTE_LINES[i]);
+            int text_width = get_bitmap_text_width_scaled(&game->font, TRIBUTE_LINES[i], scale);
             int text_x = (LOGICAL_WIDTH - text_width) / 2;
 
-            render_bitmap_text(&game->font, &game->graphics_context, TRIBUTE_LINES[i],
-                               text_x, current_y, FONT_COLOR_YELLOW);
+            render_bitmap_text_scaled(&game->font, &game->graphics_context, TRIBUTE_LINES[i],
+                                      text_x, current_y, FONT_COLOR_YELLOW, scale);
         }
 
         current_y += line_height;
@@ -192,12 +192,13 @@ static void render_tribute(tribute_stage_state_ptr state) {
         int elapsed = elapsed_from(state->start_time);
         if ((elapsed / 500) % 2 == 0) {
             const char* start_text = "PRESS SPACE TO START";
-            int start_width = get_bitmap_text_width(&game->font, start_text);
+            int start_scale = 2;  // Use a fixed scale for the prompt
+            int start_width = get_bitmap_text_width_scaled(&game->font, start_text, start_scale);
             int start_x = (LOGICAL_WIDTH - start_width) / 2;
             int start_y = LOGICAL_HEIGHT / 2;
 
-            render_bitmap_text(&game->font, &game->graphics_context, start_text,
-                               start_x, start_y, FONT_COLOR_WHITE);
+            render_bitmap_text_scaled(&game->font, &game->graphics_context, start_text,
+                                      start_x, start_y, FONT_COLOR_WHITE, start_scale);
         }
     }
 

@@ -11,6 +11,7 @@
 #include "keyboard.h"
 #include "events.h"
 #include "clock.h"
+#include <stdio.h>
 
 bool player_process_input(game_ptr game) {
     // Check for quit event using engine event system
@@ -28,16 +29,19 @@ bool player_process_input(game_ptr game) {
 
     // Handle duck movement and shooting controls (only if duck is alive)
     if (!game->duck.dead) {
-        // Handle left movement
-        if (is_left_key_pressed(keyboard_state)) {
+        // Handle horizontal movement with continuous key checking
+        bool left_pressed = is_left_key_pressed(keyboard_state);
+        bool right_pressed = is_right_key_pressed(keyboard_state);
+        
+        if (left_pressed && !right_pressed) {
             game->duck.vx = -DUCK_SPEED;
             game->duck.facing_right = false;
-        }
-        
-        // Handle right movement  
-        if (is_right_key_pressed(keyboard_state)) {
+        } else if (right_pressed && !left_pressed) {
             game->duck.vx = DUCK_SPEED;
             game->duck.facing_right = true;
+        } else {
+            // Stop when no keys or both keys are pressed
+            game->duck.vx = 0;
         }
         
         // Handle shooting
@@ -56,11 +60,6 @@ bool player_process_input(game_ptr game) {
             popcorn_spawn(game->popcorn, MAX_POPCORN,
                          game->duck.x + offset,
                          game->duck.y);
-        }
-        
-        // Stop horizontal movement when neither left nor right is pressed
-        if (!is_left_key_pressed(keyboard_state) && !is_right_key_pressed(keyboard_state)) {
-            game->duck.vx = 0;
         }
     }
     
