@@ -14,46 +14,64 @@
 #include "brick.h"
 #include "crab.h"
 #include "jellyfish.h"
+#include "object_pool.h"
+
+// Forward declarations for helper functions
+static void initialize_crabs(game_ptr game);
+static void initialize_jellyfish(game_ptr game);
 
 void initialize_all_entities(game_ptr game) {
     // Initialize duck in the center, right on top of the lake
     const int duck_height = SPRITE_DUCK_NORMAL.h * 2;  // Duck sprite height * 2x scale
-
     duck_init(&game->duck, LOGICAL_WIDTH / 2.0f, LAKE_START_Y - duck_height);
 
-    // Initialize popcorn pool (all inactive)
-    popcorn_pool_init(game->popcorn, MAX_POPCORN);
+    // Initialize object pools
+    game->popcorn_pool = create_object_pool(sizeof(popcorn_t), MAX_POPCORN);
+    game->crab_pool = create_object_pool(sizeof(crab_t), NUM_CRABS);
+    game->brick_pool = create_object_pool(sizeof(brick_t), MAX_BRICKS);
+    game->jellyfish_pool = create_object_pool(sizeof(jellyfish_t), NUM_JELLYFISH);
 
+    // Initialize crabs using object pool
+    initialize_crabs(game);
+
+    // Initialize jellyfish using object pool
+    initialize_jellyfish(game);
+}
+
+static void initialize_crabs(game_ptr game) {
     // Initialize crabs in random positions in top 60% of screen
     const int top_60_percent = (int)(LOGICAL_HEIGHT * 0.6f);
     const int crab_width = 17 * 2;
     const int crab_height = 15 * 2;
 
     for (int i = 0; i < NUM_CRABS; i++) {
+        size_t index;
+        crab_t* crab = (crab_t*)pool_acquire(&game->crab_pool, &index);
+        if (!crab) break;  // Pool full
+
         // Random x position within screen bounds
-        game->crabs[i].x = (float)(rand() % (LOGICAL_WIDTH - crab_width));
+        crab->x = (float)(rand() % (LOGICAL_WIDTH - crab_width));
 
         // Random y position in top 60% of screen
-        game->crabs[i].y = (float)(rand() % (top_60_percent - crab_height));
+        crab->y = (float)(rand() % (top_60_percent - crab_height));
 
         // Random velocity between 1.5 and 3.75 pixels per frame
         float speed = 1.5f + ((float)rand() / RAND_MAX) * 2.25f;
 
         // Random initial direction
-        game->crabs[i].moving_right = (rand() % 2) == 0;
-        game->crabs[i].vx = game->crabs[i].moving_right ? speed : -speed;
-        game->crabs[i].alive = true;  // All crabs start alive
-        game->crabs[i].has_brick = false;
-        game->crabs[i].off_screen = false;
-        game->crabs[i].dropping = false;
-        game->crabs[i].drop_start_time = 0;
+        crab->moving_right = (rand() % 2) == 0;
+        crab->vx = crab->moving_right ? speed : -speed;
+        crab->alive = true;  // All crabs start alive
+        crab->has_brick = false;
+        crab->off_screen = false;
+        crab->dropping = false;
+        crab->drop_start_time = 0;
         // Random time between 3-8 seconds before first drop
-        game->crabs[i].next_drop_time = get_clock_ticks_ms() + 3000 + (rand() % 5000);
+        crab->next_drop_time = get_clock_ticks_ms() + 3000 + (rand() % 5000);
     }
+}
 
-    // Initialize bricks pool (all inactive)
-    bricks_pool_init(game->bricks, MAX_BRICKS);
-
+static void initialize_jellyfish(game_ptr game) {
     // Initialize jellyfish midway between crabs and duck
     // Duck is at lake surface, crabs are in top 60%
     // Jellyfish should be around 70-75% down the screen
@@ -72,15 +90,27 @@ void initialize_all_entities(game_ptr game) {
     float start_x = (LOGICAL_WIDTH - total_width) / 2.0f;
 
     for (int i = 0; i < NUM_JELLYFISH; i++) {
+        size_t index;
+        jellyfish_t* jellyfish = (jellyfish_t*)pool_acquire(&game->jellyfish_pool, &index);
+        if (!jellyfish) break;  // Pool full
+
         // Position horizontally: side by side, centered as a group
-        game->jellyfish[i].x = start_x + (i * (16 * 2 + jellyfish_spacing));
-        game->jellyfish[i].y = jellyfish_zone_y;
+        jellyfish->x = start_x + (i * (16 * 2 + jellyfish_spacing));
+        jellyfish->y = jellyfish_zone_y;
 
         // All jellyfish move in the same direction at the same speed
-        game->jellyfish[i].moving_right = moving_right;
-        game->jellyfish[i].vx = moving_right ? speed : -speed;
+        jellyfish->moving_right = moving_right;
+        jellyfish->vx = moving_right ? speed : -speed;
 
-        game->jellyfish[i].anim_frame = i % 4;  // Stagger animation frames
-        game->jellyfish[i].last_anim_time = get_clock_ticks_ms();
+        jellyfish->anim_frame = i % 4;  // Stagger animation frames
+        jellyfish->last_anim_time = get_clock_ticks_ms();
     }
+}
+
+void cleanup_all_entities(game_ptr game) {
+    // Clean up object pools
+    pool_destroy(&game->popcorn_pool);
+    pool_destroy(&game->crab_pool);
+    pool_destroy(&game->brick_pool);
+    pool_destroy(&game->jellyfish_pool);
 }

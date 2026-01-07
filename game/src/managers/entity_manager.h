@@ -12,9 +12,15 @@
 #include "game.h"
 
 /**
- * @brief Initialize all game entities
+ * @brief Initialize all game entities with object pools
  * @param game Game state containing entities to initialize
  */
 void initialize_all_entities(game_ptr game);
+
+/**
+ * @brief Clean up all entity object pools
+ * @param game Game state containing entity pools to destroy
+ */
+void cleanup_all_entities(game_ptr game);
 
 #endif // ENTITY_MANAGER_H

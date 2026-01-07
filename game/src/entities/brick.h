@@ -20,6 +20,9 @@ typedef struct {
     timestamp_ms_t land_time;  // When brick landed (for timeout)
 } brick_t;
 
+// Pointer typedef for brick
+typedef brick_t* brick_ptr;
+
 // Brick sprite dimensions
 #define BRICK_WIDTH 13   // Sprite width
 #define BRICK_HEIGHT 5   // Sprite height

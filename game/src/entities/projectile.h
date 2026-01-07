@@ -19,6 +19,9 @@ typedef struct {
     bool reflected;    // True if reflected by jellyfish
 } popcorn_t;
 
+// Pointer typedef for popcorn
+typedef popcorn_t* popcorn_ptr;
+
 // Popcorn sprite dimensions
 #define POPCORN_WIDTH 7   // Sprite width
 #define POPCORN_HEIGHT 6  // Sprite height

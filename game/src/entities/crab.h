@@ -27,6 +27,9 @@ typedef struct {
     timestamp_ms_t next_drop_time;   // When crab will drop next brick
 } crab_t;
 
+// Pointer typedef for crab
+typedef crab_t* crab_ptr;
+
 // Crab sprite dimensions (2x scale)
 #define CRAB_WIDTH (17 * 2)   // Crab sprite width at 2x scale
 #define CRAB_HEIGHT (15 * 2)  // Crab sprite height at 2x scale

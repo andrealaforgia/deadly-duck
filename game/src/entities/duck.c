@@ -11,14 +11,14 @@
 #include <stdio.h>
 
 // Private helper functions
-static void duck_update_shooting(duck_t* duck);
-static void duck_init_extended(duck_t* duck);
+static void duck_update_shooting(duck_ptr duck);
+static void duck_init_extended(duck_ptr duck);
 
 // =============================================================================
 // PROCEDURAL INTERFACE (Backward Compatibility)
 // =============================================================================
 
-void duck_init(duck_t* duck, float x, float y) {
+void duck_init(duck_ptr duck, float x, float y) {
     if (!duck) return;
     
     // Initialize basic state
@@ -35,7 +35,7 @@ void duck_init(duck_t* duck, float x, float y) {
     duck_init_extended(duck);
 }
 
-void duck_update(duck_t* duck) {
+void duck_update(duck_ptr duck) {
     if (!duck) return;
     
     // Apply movement for backward compatibility
@@ -51,7 +51,7 @@ void duck_update(duck_t* duck) {
     duck_update_shooting(duck);
 }
 
-void duck_respawn(duck_t* duck, float x, float y) {
+void duck_respawn(duck_ptr duck, float x, float y) {
     if (!duck) return;
     
     duck->x = x;
@@ -71,15 +71,15 @@ void duck_respawn(duck_t* duck, float x, float y) {
 // OBJECT-ORIENTED INTERFACE (Enhanced)
 // =============================================================================
 
-duck_t* duck_create(float x, float y, float bounds_min_x, float bounds_max_x) {
-    duck_t* self = malloc(sizeof(duck_t));
+duck_ptr duck_create(float x, float y, float bounds_min_x, float bounds_max_x) {
+    duck_ptr self = malloc(sizeof(duck_t));
     if (!self) return NULL;
     
     duck_init_bounds(self, x, y, bounds_min_x, bounds_max_x);
     return self;
 }
 
-void duck_init_bounds(duck_t* self, float x, float y, float bounds_min_x, float bounds_max_x) {
+void duck_init_bounds(duck_ptr self, float x, float y, float bounds_min_x, float bounds_max_x) {
     if (!self) return;
     
     // Initialize basic state using procedural function
@@ -92,13 +92,13 @@ void duck_init_bounds(duck_t* self, float x, float y, float bounds_min_x, float 
     self->max_speed = DUCK_SPEED * 1.5f;  // Allow slightly faster than default
 }
 
-void duck_destroy(duck_t* self) {
+void duck_destroy(duck_ptr self) {
     if (self) {
         free(self);
     }
 }
 
-void duck_update_enhanced(duck_t* self, float delta_time) {
+void duck_update_enhanced(duck_ptr self, float delta_time) {
     if (!self) return;
     
     // Call base update
@@ -117,7 +117,7 @@ void duck_update_enhanced(duck_t* self, float delta_time) {
     }
 }
 
-void duck_set_velocity(duck_t* self, float velocity_x) {
+void duck_set_velocity(duck_ptr self, float velocity_x) {
     if (!self || !duck_is_alive(self)) return;
     
     // Clamp to max speed
@@ -137,7 +137,7 @@ void duck_set_velocity(duck_t* self, float velocity_x) {
     }
 }
 
-void duck_move(duck_t* self, float dx) {
+void duck_move(duck_ptr self, float dx) {
     if (!self || !duck_is_alive(self)) return;
     
     self->x += dx;
@@ -150,7 +150,7 @@ void duck_move(duck_t* self, float dx) {
     }
 }
 
-bool duck_start_shooting(duck_t* self) {
+bool duck_start_shooting(duck_ptr self) {
     if (!self || !duck_is_alive(self) || duck_is_shooting(self)) {
         return false;
     }
@@ -160,13 +160,13 @@ bool duck_start_shooting(duck_t* self) {
     return true;
 }
 
-void duck_stop_shooting(duck_t* self) {
+void duck_stop_shooting(duck_ptr self) {
     if (!self) return;
     
     self->shooting = false;
 }
 
-bool duck_take_damage(duck_t* self, int damage) {
+bool duck_take_damage(duck_ptr self, int damage) {
     if (!self || !duck_is_alive(self)) return false;
     
     self->health -= damage;
@@ -181,14 +181,14 @@ bool duck_take_damage(duck_t* self, int damage) {
     return false;  // Duck still alive
 }
 
-void duck_heal(duck_t* self, int healing) {
+void duck_heal(duck_ptr self, int healing) {
     if (!self) return;
     
     self->health += healing;
     // Note: Could add max health cap later
 }
 
-void duck_set_bounds(duck_t* self, float min_x, float max_x) {
+void duck_set_bounds(duck_ptr self, float min_x, float max_x) {
     if (!self) return;
     
     self->bounds_min_x = min_x;
@@ -199,18 +199,18 @@ void duck_set_bounds(duck_t* self, float min_x, float max_x) {
 // GETTER METHODS (Object-oriented)
 // =============================================================================
 
-void duck_get_position(const duck_t* self, float* x, float* y) {
+void duck_get_position(const duck_ptr self, float* x, float* y) {
     if (!self || !x || !y) return;
     
     *x = self->x;
     *y = self->y;
 }
 
-float duck_get_velocity(const duck_t* self) {
+float duck_get_velocity(const duck_ptr self) {
     return self ? self->vx : 0.0f;
 }
 
-void duck_get_bounds(const duck_t* self, float* x, float* y, float* width, float* height) {
+void duck_get_bounds(const duck_ptr self, float* x, float* y, float* width, float* height) {
     if (!self || !x || !y || !width || !height) return;
     
     *x = self->x;
@@ -219,23 +219,23 @@ void duck_get_bounds(const duck_t* self, float* x, float* y, float* width, float
     *height = DUCK_HEIGHT;
 }
 
-bool duck_is_facing_right(const duck_t* self) {
+bool duck_is_facing_right(const duck_ptr self) {
     return self ? self->facing_right : false;
 }
 
-bool duck_is_shooting(const duck_t* self) {
+bool duck_is_shooting(const duck_ptr self) {
     return self ? self->shooting : false;
 }
 
-bool duck_is_alive(const duck_t* self) {
+bool duck_is_alive(const duck_ptr self) {
     return self ? (!self->dead && self->health > 0) : false;
 }
 
-int duck_get_health(const duck_t* self) {
+int duck_get_health(const duck_ptr self) {
     return self ? self->health : 0;
 }
 
-bool duck_is_within_bounds(const duck_t* self) {
+bool duck_is_within_bounds(const duck_ptr self) {
     if (!self) return false;
     
     return (self->x >= self->bounds_min_x && 
@@ -246,7 +246,7 @@ bool duck_is_within_bounds(const duck_t* self) {
 // PRIVATE HELPER FUNCTIONS
 // =============================================================================
 
-static void duck_update_shooting(duck_t* duck) {
+static void duck_update_shooting(duck_ptr duck) {
     if (!duck || !duck->shooting) return;
     
     timestamp_ms_t current_time = get_clock_ticks_ms();
@@ -255,7 +255,7 @@ static void duck_update_shooting(duck_t* duck) {
     }
 }
 
-static void duck_init_extended(duck_t* duck) {
+static void duck_init_extended(duck_ptr duck) {
     if (!duck) return;
     
     // Set reasonable defaults for Object-oriented features

@@ -21,6 +21,9 @@ typedef struct {
     timestamp_ms_t last_anim_time;  // Last animation frame change time
 } jellyfish_t;
 
+// Pointer typedef for jellyfish
+typedef jellyfish_t* jellyfish_ptr;
+
 // Jellyfish sprite dimensions (2x scale)
 #define JELLYFISH_WIDTH (16 * 2)  // Wider frame at 2x scale
 #define JELLYFISH_HEIGHT (13 * 2)  // Jellyfish sprite height at 2x scale

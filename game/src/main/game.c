@@ -53,6 +53,9 @@ bool game_init(game_t* game) {
 }
 
 void game_terminate(game_t* game) {
+    // Clean up entity pools
+    cleanup_all_entities(game);
+    
     // Free all game resources
     free_game_resources(game);
 }

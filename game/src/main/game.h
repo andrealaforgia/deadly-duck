@@ -18,6 +18,7 @@
 #include "audio.h"
 #include "event_system.h"
 #include "keyboard.h"
+#include "object_pool.h"
 
 // Entity modules
 #include "duck.h"
@@ -87,10 +88,12 @@ typedef struct {
 
     // Game entities
     duck_t duck;
-    popcorn_t popcorn[MAX_POPCORN];
-    crab_t crabs[NUM_CRABS];
-    brick_t bricks[MAX_BRICKS];
-    jellyfish_t jellyfish[NUM_JELLYFISH];
+    
+    // Object pools for efficient entity management
+    object_pool_t popcorn_pool;
+    object_pool_t crab_pool; 
+    object_pool_t brick_pool;
+    object_pool_t jellyfish_pool;
 
     // Game statistics
     int lives;
