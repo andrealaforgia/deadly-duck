@@ -54,7 +54,7 @@ LFLAGS := $(SDL2_LFLAGS) -lm
 
 TARGET = deadly-duck
 
-.PHONY: all install clean run
+.PHONY: all install clean run lint
 
 all: $(TARGET)
 
@@ -76,3 +76,16 @@ clean:
 
 run: $(TARGET)
 	./$(TARGET)
+
+lint:
+	@echo "Running cppcheck linter..."
+	cppcheck --enable=all --std=c99 --platform=unix64 --suppress=missingIncludeSystem \
+		--suppress=unusedFunction --suppress=unmatchedSuppression \
+		-I$(ENGINE_GRAPHICS_DIR) -I$(ENGINE_MATH_DIR) -I$(ENGINE_INPUT_DIR) \
+		-I$(ENGINE_AUDIO_DIR) -I$(ENGINE_TIME_DIR) -I$(ENGINE_UTILS_DIR) \
+		-I$(ENGINE_MEMORY_DIR) -I$(ENGINE_EVENTS_DIR) \
+		-I$(GAME_MAIN_DIR) -I$(GAME_STAGES_DIR) -I$(GAME_ENTITIES_DIR) \
+		-I$(GAME_CONTROLLERS_DIR) -I$(GAME_COLLISION_DIR) -I$(GAME_RENDERING_DIR) \
+		-I$(GAME_MANAGERS_DIR) -I$(GAME_SCORING_DIR) -I$(GAME_EVENTS_DIR) \
+		$(SRC) 2>&1 | grep -v "Cppcheck cannot find all the include files" || true
+	@echo "Linting complete."
